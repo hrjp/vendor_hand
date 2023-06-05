@@ -59,6 +59,9 @@
   <build_export_depend>rospy</build_export_depend>
   <build_export_depend>std_msgs</build_export_depend>
   <build_export_depend>tf</build_export_depend>
+  <exec_depend>joy</exec_depend>
+  <exec_depend>joystick_drivers</exec_depend>
+  <exec_depend>jsk_visualization</exec_depend>
   <exec_depend>dynamixel_wrapper</exec_depend>
   <exec_depend>roscpp</exec_depend>
   <exec_depend>rospy</exec_depend>

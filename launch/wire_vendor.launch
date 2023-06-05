@@ -1,0 +1,9 @@
+<launch>
+    <node name="joy_node" pkg="joy" type="joy_node" >
+        <param name="dev" value="/dev/input/js1" />
+    </node>
+
+    <node name="wire_vendor" pkg="vendor_hand" type="wire_vendor" output="screen"/>
+
+
+</launch>

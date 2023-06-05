@@ -206,3 +206,6 @@ include_directories(
 
 ## Add folders to be run by python nosetests
 # catkin_add_nosetests(test)
+
+add_executable(wire_vendor src/wire_vendor.cpp)
+target_link_libraries(wire_vendor ${catkin_LIBRARIES})
