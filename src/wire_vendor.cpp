@@ -131,11 +131,11 @@ int main(int argc, char **argv){
             motor0.setTorqueEnable(false);
             motor1.setTorqueEnable(false);
             motor2.setTorqueEnable(false);
-            motor3.setTorqueEnable(false);
+            
         }
         //triangle
         if(joy_msg.buttons[2]){
-            is_continue_mode=true;
+            motor3.setTorqueEnable(false);
         }
         //square
         if(joy_msg.buttons[3]){
@@ -147,14 +147,13 @@ int main(int argc, char **argv){
             motor2.setTorqueEnable(true);
             motor3.setTorqueEnable(true);
         }
-
+        /*
         //right
         if(joy_msg.axes[6]<0){
             task=Task::Right;
             seq=0;
             ROS_INFO("Right");
         }
-
         //up
         if(joy_msg.axes[7]>0){
             task=Task::Straight;
@@ -174,6 +173,31 @@ int main(int argc, char **argv){
             seq=0;
             ROS_INFO("Back");
         }
+        */
+       
+        const double vendor_angle=14.878308268906359;
+        const double dis_angle=901.1247894413183;
+
+        //right
+        if(joy_msg.axes[6]<0){
+           motor0.setGoalPosition(init_angle[0]+vendor_angle);
+        }
+
+        //up
+        if(joy_msg.axes[7]>0){
+            motor1.setGoalPosition(motor1.getPresentPosition()+dis_angle);
+            motor2.setGoalPosition(motor2.getPresentPosition()-dis_angle);
+        }
+
+        //left
+        if(joy_msg.axes[6]>0){
+            motor0.setGoalPosition(init_angle[0]-vendor_angle);
+        }
+        //down
+        if(joy_msg.axes[7]<0){
+            motor0.setGoalPosition(init_angle[0]);
+        }
+
 
         //L1
         if(joy_msg.buttons[4]){
