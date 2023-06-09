@@ -74,8 +74,8 @@ int main(int argc, char **argv){
     motor3.setTorqueEnable(false);
     
     motor0.setCurrentLimit(60.0);
-    motor1.setCurrentLimit(60.0);
-    motor2.setCurrentLimit(60.0);
+    motor1.setCurrentLimit(10.0);
+    motor2.setCurrentLimit(10.0);
     motor3.setCurrentLimit(350.0);
     
     const std::vector<double> init_angle={
@@ -174,24 +174,29 @@ int main(int argc, char **argv){
             ROS_INFO("Back");
         }
         */
-       
-        const double vendor_angle=14.878308268906359;
-        const double dis_angle=901.1247894413183;
-
+        const double target_d=200.0;
+        const double n=2.0;
+        const double pitch_d=40.0;
+        const double unit_r=13.0;
+        const double vendor_angle=2.0*unit_r*n/target_d;
+        const double vendor_angle_deg=vendor_angle*180.0/M_PI;
+        const double dis_angle=2.0*M_PI*unit_r*n/(pitch_d*vendor_angle);
+        const double dis_angle_deg=dis_angle*180.0/M_PI;
+        ROS_INFO("%lf,%lf",vendor_angle_deg,dis_angle_deg);
         //right
         if(joy_msg.axes[6]<0){
-           motor0.setGoalPosition(init_angle[0]+vendor_angle);
+           motor0.setGoalPosition(init_angle[0]+vendor_angle_deg);
         }
 
         //up
         if(joy_msg.axes[7]>0){
-            motor1.setGoalPosition(motor1.getPresentPosition()+dis_angle);
-            motor2.setGoalPosition(motor2.getPresentPosition()-dis_angle);
+            motor1.setGoalPosition(motor1.getPresentPosition()+dis_angle_deg);
+            motor2.setGoalPosition(motor2.getPresentPosition()-dis_angle_deg);
         }
 
         //left
         if(joy_msg.axes[6]>0){
-            motor0.setGoalPosition(init_angle[0]-vendor_angle);
+            motor0.setGoalPosition(init_angle[0]-vendor_angle_deg);
         }
         //down
         if(joy_msg.axes[7]<0){
