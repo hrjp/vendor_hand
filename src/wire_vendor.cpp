@@ -29,11 +29,21 @@ void joy_callback(const sensor_msgs::Joy& msg){
     pre_joy=joy_msg;
 }
 
+double target_angular_vel=0.0;
+void angle_callback(const std_msgs::Float32& msg){
+    target_angular_vel=msg.data*30.0/M_PI;
+}
+
+double target_rpm=0.0;
+void linear_vel_callback(const std_msgs::Float32& msg){
+    target_rpm=30.0/M_PI*msg.data*2.0/0.04;
+}
+
 int main(int argc, char **argv){
     
     ros::init(argc, argv, "wire_vendor_node");
     ros::NodeHandle n;
-    double rate=10.0;
+    double rate=20.0;
     //制御周期10Hz
     ros::Rate loop_rate(rate);
 
@@ -67,6 +77,9 @@ int main(int argc, char **argv){
     ros::Publisher current_pub0=n.advertise<std_msgs::Float32>("motor0/current", 10);
     ros::Publisher current_pub1=n.advertise<std_msgs::Float32>("motor1/current", 10);
     ros::Publisher current_pub2=n.advertise<std_msgs::Float32>("motor2/current", 10);
+
+    ros::Subscriber angle_sub=n.subscribe("angle",10,angle_callback);
+    ros::Subscriber linear_vel_sub=n.subscribe("linear_vel",10,linear_vel_callback);
 
     motor0.setTorqueEnable(false);
     motor1.setTorqueEnable(false);
@@ -324,12 +337,10 @@ int main(int argc, char **argv){
             }
         }
         
-        const double tar_vel=joy_msg.axes[1]*40.0;
-        motor1.setGoalVelocity(tar_vel);
-        motor2.setGoalVelocity(-tar_vel);
+        motor1.setGoalVelocity(target_rpm);
+        motor2.setGoalVelocity(-target_rpm);
 
-        const double tar_angle_vel=joy_msg.axes[3]*20.0;
-        motor0.setGoalVelocity(-tar_angle_vel);
+        motor0.setGoalVelocity(-target_angular_vel);
         
         std::vector<std_msgs::Float32> pos_msg(4);
         pos_msg[0].data=motor0.getPresentPosition();

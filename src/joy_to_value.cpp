@@ -17,7 +17,7 @@ std_msgs::Float32 linear_vel_msg;
 void joyCallback(const sensor_msgs::Joy::ConstPtr &msg)
 {
     
-    angle_msg.data = msg->axes.at(3) * 0.5;
+    angle_msg.data = msg->axes.at(3) * 1.0;
     linear_vel_msg.data = msg->axes.at(1) * 0.05;
 }
 
@@ -27,7 +27,7 @@ int main(int argc, char **argv)
     ros::NodeHandle n;
     // param setting
     ros::NodeHandle pn("~");
-    ros::Rate loop_rate(20);
+    ros::Rate loop_rate(10);
 
     // Publisher
     ros::Publisher angle_pub = n.advertise<std_msgs::Float32>("angle", 1);
