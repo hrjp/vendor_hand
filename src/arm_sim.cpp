@@ -49,13 +49,14 @@ void linearVelCallback(const std_msgs::Float32::ConstPtr &msg)
 {
     const auto dt = (ros::Time::now() - prev_time).toSec();
     prev_time = ros::Time::now();
-    if (dt < 0.1)
+    if (dt < 0.11)
     {
         linear_pos += msg->data * dt;
     }
-    const int linear_num = linear_pos / arm_unit_length;
-    linear_pos = std::max(linear_pos, 0.0);
+
+    linear_pos = std::max(linear_pos, arm_unit_length * (vendor_num));
     linear_pos = std::min(linear_pos, arm_num * arm_unit_length);
+    const int linear_num = linear_pos / arm_unit_length;
     for (int i = 0; i < arm_num - linear_num; i++)
     {
         angles.at(i) = 0.0;
