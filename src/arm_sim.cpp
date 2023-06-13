@@ -82,7 +82,7 @@ int main(int argc, char **argv)
     ros::init(argc, argv, "arm_sim_node");
     ros::NodeHandle n;
     // 制御周期10Hz
-    ros::Rate loop_rate(10);
+    ros::Rate loop_rate(100);
 
     // param setting
     ros::NodeHandle pn("~");
