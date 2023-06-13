@@ -86,7 +86,7 @@ int main(int argc, char **argv)
 
     // param setting
     ros::NodeHandle pn("~");
-    arm_num = pn.param<int>("arm_num", 50);
+    arm_num = pn.param<int>("arm_num", 100);
     arm_unit_length = pn.param<double>("arm_unit_length", 0.013);
     vendor_num = pn.param<int>("vendor_num", 2);
     const double arm_unit_radius = pn.param<double>("arm_unit_radius", 0.02);
@@ -94,6 +94,7 @@ int main(int argc, char **argv)
     prev_time = ros::Time::now();
     // Publisher
     ros::Publisher markers_pub = n.advertise<visualization_msgs::MarkerArray>("arm_sim_markers", 1);
+    ros::Publisher debug_markers_pub = n.advertise<visualization_msgs::MarkerArray>("arm_sim_debug_markers", 1);
     // subscriber
     ros::Subscriber angle_sub = n.subscribe("angle", 1, angleCallback);
     ros::Subscriber linear_sub = n.subscribe("linear_vel", 1, linearVelCallback);
@@ -101,6 +102,9 @@ int main(int argc, char **argv)
 
     visualization_msgs::MarkerArray markers;
     markers.markers.resize(arm_num);
+    visualization_msgs::MarkerArray debug_markers;
+    debug_markers.markers.resize(10);
+
 
     while (n.ok())
     {
@@ -130,12 +134,39 @@ int main(int argc, char **argv)
             markers.markers[i].pose.orientation.z = quat.z();
             markers.markers[i].scale.x = arm_unit_radius;
             markers.markers[i].scale.y = arm_unit_radius;
-            markers.markers[i].scale.z = 0.02;
+            markers.markers[i].scale.z = 0.01;
             markers.markers[i].color.r = 1.0;
             markers.markers[i].color.g = 0.0;
             markers.markers[i].color.b = 0.0;
             markers.markers[i].color.a = 1.0;
         }
+
+        {
+        int i=0;
+        debug_markers.markers[i].header.frame_id = "map";
+        debug_markers.markers[i].header.stamp = ros::Time::now();
+        debug_markers.markers[i].ns = "debug";
+        debug_markers.markers[i].id = i;
+        debug_markers.markers[i].type = visualization_msgs::Marker::ARROW;
+        debug_markers.markers[i].action = visualization_msgs::Marker::ADD;
+        angle_sum += angles.at(i);
+        Eigen::Quaterniond quat(Eigen::AngleAxisd(angle, Eigen::Vector3d::UnitZ()));
+        debug_markers.markers[i].pose.position.x = arm_unit_length;
+        debug_markers.markers[i].pose.position.y = 0.0;
+        debug_markers.markers[i].pose.position.z = arm_unit_radius;
+        debug_markers.markers[i].pose.orientation.w = quat.w();
+        debug_markers.markers[i].pose.orientation.x = quat.x();
+        debug_markers.markers[i].pose.orientation.y = quat.y();
+        debug_markers.markers[i].pose.orientation.z = quat.z();
+        debug_markers.markers[i].scale.x = arm_unit_radius*3.0;
+        debug_markers.markers[i].scale.y = arm_unit_radius*0.5;
+        debug_markers.markers[i].scale.z = arm_unit_radius*0.5;
+        debug_markers.markers[i].color.r = 0.0;
+        debug_markers.markers[i].color.g = 1.0;
+        debug_markers.markers[i].color.b = 0.0;
+        debug_markers.markers[i].color.a = 1.0;
+        }
+        debug_markers_pub.publish(debug_markers);
         markers_pub.publish(markers);
         ros::spinOnce(); // subsucriberの割り込み関数はこの段階で実装される
         loop_rate.sleep();
