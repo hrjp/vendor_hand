@@ -21,12 +21,18 @@ int vendor_num;
 // global variable
 double angle = 0.0;
 
-double linear_pos = 0.2;
+double linear_pos = 0.0;
 std::vector<double> angles;
 
+ros::Time prev_time_angle;
 void angleCallback(const std_msgs::Float32::ConstPtr &msg)
 {
-    angle = msg->data;
+    const auto dt = (ros::Time::now() - prev_time_angle).toSec();
+    prev_time_angle = ros::Time::now();
+    if (dt < 0.11)
+    {
+        angle += msg->data * dt;
+    }
     const int linear_num = linear_pos / arm_unit_length;
     if (linear_num < 0 or linear_num > arm_num - 1)
     {
@@ -84,6 +90,7 @@ int main(int argc, char **argv)
     arm_unit_length = pn.param<double>("arm_unit_length", 0.013);
     vendor_num = pn.param<int>("vendor_num", 2);
     const double arm_unit_radius = pn.param<double>("arm_unit_radius", 0.02);
+    linear_pos = arm_unit_length * (vendor_num);
     prev_time = ros::Time::now();
     // Publisher
     ros::Publisher markers_pub = n.advertise<visualization_msgs::MarkerArray>("arm_sim_markers", 1);
@@ -99,7 +106,7 @@ int main(int argc, char **argv)
     {
 
         double angle_sum = 0.0;
-        markers.markers[0].pose.position.x = linear_pos - arm_num * arm_unit_length;
+        markers.markers[0].pose.position.x = linear_pos - (arm_num - vendor_num) * arm_unit_length;
         markers.markers[0].pose.position.y = 0.0;
         markers.markers[0].pose.position.z = 0.0;
         for (int i = 1; i < markers.markers.size(); i++)
