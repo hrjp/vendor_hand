@@ -121,6 +121,7 @@ include_directories(
 # include
   ${catkin_INCLUDE_DIRS}
 )
+include_directories("/usr/include/eigen3")
 
 ## Declare a C++ library
 # add_library(${PROJECT_NAME}
@@ -209,3 +210,6 @@ include_directories(
 
 add_executable(wire_vendor src/wire_vendor.cpp)
 target_link_libraries(wire_vendor ${catkin_LIBRARIES})
+
+add_executable(arm_sim src/arm_sim.cpp)
+target_link_libraries(arm_sim ${catkin_LIBRARIES})

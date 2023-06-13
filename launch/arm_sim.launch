@@ -1,0 +1,5 @@
+<launch>
+    <node name="arm_sim" pkg="vendor_hand" type="arm_sim" output="screen" />
+    <arg name="rviz_file" default="$(find vendor_hand)/rviz/arm_sim.rviz" />
+    <node pkg="rviz" type="rviz" name="rviz" args="-d $(arg rviz_file)" respawn="true" />
+</launch>
