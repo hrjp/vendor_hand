@@ -17,6 +17,7 @@
 // global parameter
 double arm_unit_length;
 int arm_num;
+int vendor_num;
 // global variable
 double angle = 0.0;
 
@@ -32,39 +33,43 @@ void angleCallback(const std_msgs::Float32::ConstPtr &msg)
         ROS_ERROR("linear_num < 0 or linear_num > arm_num-1");
         return;
     }
-    angles.at(arm_num - linear_num) = angle;
-    /*
-    const int linear_num = linear_pos / arm_unit_length;
-    if (linear_num < 0 or linear_num > arm_num - 1)
+    if (linear_num < vendor_num)
     {
-        ROS_ERROR("linear_num < 0 or linear_num > arm_num-1");
+        angles.at(arm_num - linear_num);
         return;
     }
-    for (int i = 0; i < linear_num; i++)
+    for (int i = 0; i < vendor_num; i++)
     {
-        const int num = arm_num - linear_num;
-        Eigen::Quaterniond q(poses.poses[num].orientation.w, poses.poses[num].orientation.x,
-                             poses.poses[num].orientation.y, poses.poses[num].orientation.z);
-        Eigen::Quaterniond msg_q(Eigen::AngleAxisd(angle - prev_angle, Eigen::Vector3d::UnitZ()));
-        Eigen::Vector3d pos(arm_unit_length, 0, 0);
-        const auto new_q = q * msg_q;
-        pos = new_q * pos;
-        poses.poses[num].position.x = pos.x() + poses.poses[num - 1].position.x;
-        poses.poses[num].position.y = pos.y() + poses.poses[num - 1].position.y;
-        poses.poses[num].position.z = pos.z() + poses.poses[num - 1].position.z;
-        poses.poses[num].orientation.w = new_q.w();
-        poses.poses[num].orientation.x = new_q.x();
-        poses.poses[num].orientation.y = new_q.y();
-        poses.poses[num].orientation.z = new_q.z();
+        angles.at(arm_num - linear_num + i) = angle / double(vendor_num);
     }
-    prev_angle = angle;
-    */
 }
 
+ros::Time prev_time;
 void linearVelCallback(const std_msgs::Float32::ConstPtr &msg)
 {
+    const auto dt = (ros::Time::now() - prev_time).toSec();
+    prev_time = ros::Time::now();
+    if (dt < 0.1)
+    {
+        linear_pos += msg->data * dt;
+    }
+    const int linear_num = linear_pos / arm_unit_length;
+    linear_pos = std::max(linear_pos, 0.0);
+    linear_pos = std::min(linear_pos, arm_num * arm_unit_length);
+    for (int i = 0; i < arm_num - linear_num; i++)
+    {
+        angles.at(i) = 0.0;
+    }
+    if (linear_num < vendor_num)
+    {
+        angles.at(arm_num - linear_num);
+        return;
+    }
+    for (int i = 0; i < vendor_num; i++)
+    {
+        angles.at(arm_num - linear_num + i) = angle / double(vendor_num);
+    }
 }
-
 int main(int argc, char **argv)
 {
     ros::init(argc, argv, "arm_sim_node");
@@ -76,8 +81,9 @@ int main(int argc, char **argv)
     ros::NodeHandle pn("~");
     arm_num = pn.param<int>("arm_num", 50);
     arm_unit_length = pn.param<double>("arm_unit_length", 0.013);
+    vendor_num = pn.param<int>("vendor_num", 2);
     const double arm_unit_radius = pn.param<double>("arm_unit_radius", 0.02);
-
+    prev_time = ros::Time::now();
     // Publisher
     ros::Publisher markers_pub = n.advertise<visualization_msgs::MarkerArray>("arm_sim_markers", 1);
     // subscriber
