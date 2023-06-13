@@ -213,3 +213,6 @@ target_link_libraries(wire_vendor ${catkin_LIBRARIES})
 
 add_executable(arm_sim src/arm_sim.cpp)
 target_link_libraries(arm_sim ${catkin_LIBRARIES})
+
+add_executable(joy_to_value src/joy_to_value.cpp)
+target_link_libraries(joy_to_value ${catkin_LIBRARIES})
