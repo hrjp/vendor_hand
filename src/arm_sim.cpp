@@ -8,6 +8,7 @@
 
 #include <ros/ros.h>
 #include <std_msgs/Float32.h>
+#include <std_msgs/Float32MultiArray.h>
 #include <geometry_msgs/PoseArray.h>
 #include <visualization_msgs/MarkerArray.h>
 #include <Eigen/Core>
@@ -22,7 +23,7 @@ int vendor_num;
 double angle = 0.0;
 
 double linear_pos = 0.0;
-std::vector<double> angles;
+std::vector<float> angles;
 
 ros::Time prev_time_angle;
 void angleCallback(const std_msgs::Float32::ConstPtr &msg)
@@ -77,6 +78,17 @@ void linearVelCallback(const std_msgs::Float32::ConstPtr &msg)
         angles.at(arm_num - linear_num + i) = angle / double(vendor_num);
     }
 }
+
+void anglesCallback(const std_msgs::Float32MultiArray::ConstPtr &msg)
+{
+    if (msg->data.size() != arm_num)
+    {
+        ROS_ERROR("msg->data.size() != arm_num");
+        return;
+    }
+    angles = msg->data;
+}
+
 int main(int argc, char **argv)
 {
     ros::init(argc, argv, "arm_sim_node");
@@ -98,21 +110,39 @@ int main(int argc, char **argv)
     // subscriber
     ros::Subscriber angle_sub = n.subscribe("angle", 1, angleCallback);
     ros::Subscriber linear_sub = n.subscribe("linear_vel", 1, linearVelCallback);
+    ros::Subscriber angles_sub = n.subscribe("angles", 1, anglesCallback);
     angles.resize(arm_num);
 
     visualization_msgs::MarkerArray markers;
     markers.markers.resize(arm_num);
     visualization_msgs::MarkerArray debug_markers;
-    debug_markers.markers.resize(10);
+    debug_markers.markers.resize(1);
 
 
     while (n.ok())
     {
 
         double angle_sum = 0.0;
+        markers.markers[0].header.frame_id = "map";
+        markers.markers[0].header.stamp = ros::Time::now();
+        markers.markers[0].ns = "arm";
+        markers.markers[0].id = 0;
+        markers.markers[0].type = visualization_msgs::Marker::CYLINDER;
+        markers.markers[0].action = visualization_msgs::Marker::ADD;
         markers.markers[0].pose.position.x = linear_pos - (arm_num - vendor_num) * arm_unit_length;
         markers.markers[0].pose.position.y = 0.0;
         markers.markers[0].pose.position.z = 0.0;
+        markers.markers[0].pose.orientation.w = 1.0;
+        markers.markers[0].pose.orientation.x = 0.0;
+        markers.markers[0].pose.orientation.y = 0.0;
+        markers.markers[0].pose.orientation.z = 0.0;
+        markers.markers[0].scale.x = arm_unit_radius;
+        markers.markers[0].scale.y = arm_unit_radius;
+        markers.markers[0].scale.z = 0.01;
+        markers.markers[0].color.r = 1.0;
+        markers.markers[0].color.g = 0.0;
+        markers.markers[0].color.b = 0.0;
+        markers.markers[0].color.a = 1.0;
         for (int i = 1; i < markers.markers.size(); i++)
         {
             markers.markers[i].header.frame_id = "map";
