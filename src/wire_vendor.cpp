@@ -78,7 +78,7 @@ int main(int argc, char **argv){
     ros::Publisher current_pub1=n.advertise<std_msgs::Float32>("motor1/current", 10);
     ros::Publisher current_pub2=n.advertise<std_msgs::Float32>("motor2/current", 10);
 
-    ros::Subscriber angle_sub=n.subscribe("angle",10,angle_callback);
+    ros::Subscriber angle_sub=n.subscribe("angular_vel",10,angle_callback);
     ros::Subscriber linear_vel_sub=n.subscribe("linear_vel",10,linear_vel_callback);
 
     motor0.setTorqueEnable(false);

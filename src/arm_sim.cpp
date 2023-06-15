@@ -26,7 +26,7 @@ double linear_pos = 0.0;
 std::vector<float> angles;
 
 ros::Time prev_time_angle;
-void angleCallback(const std_msgs::Float32::ConstPtr &msg)
+void angularCallback(const std_msgs::Float32::ConstPtr &msg)
 {
     const auto dt = (ros::Time::now() - prev_time_angle).toSec();
     prev_time_angle = ros::Time::now();
@@ -34,6 +34,28 @@ void angleCallback(const std_msgs::Float32::ConstPtr &msg)
     {
         angle += msg->data * dt;
     }
+    const int linear_num = linear_pos / arm_unit_length;
+    if (linear_num < 0 or linear_num > arm_num - 1)
+    {
+        ROS_ERROR("linear_num < 0 or linear_num > arm_num-1");
+        return;
+    }
+    if (linear_num < vendor_num)
+    {
+        angles.at(arm_num - linear_num);
+        return;
+    }
+    for (int i = 0; i < vendor_num; i++)
+    {
+        angles.at(arm_num - linear_num + i) = angle / double(vendor_num);
+    }
+}
+
+void angleCallback(const std_msgs::Float32::ConstPtr &msg)
+{
+
+    angle = msg->data;
+    
     const int linear_num = linear_pos / arm_unit_length;
     if (linear_num < 0 or linear_num > arm_num - 1)
     {
@@ -107,8 +129,11 @@ int main(int argc, char **argv)
     // Publisher
     ros::Publisher markers_pub = n.advertise<visualization_msgs::MarkerArray>("arm_sim_markers", 1);
     ros::Publisher debug_markers_pub = n.advertise<visualization_msgs::MarkerArray>("arm_sim_debug_markers", 1);
+    ros::Publisher now_angle_pub = n.advertise<std_msgs::Float32>("now_angle", 1);
+    ros::Publisher now_linear_pos_pub = n.advertise<std_msgs::Float32>("now_linear_pos", 1);
     // subscriber
     ros::Subscriber angle_sub = n.subscribe("angle", 1, angleCallback);
+    ros::Subscriber angular_sub = n.subscribe("angular_vel", 1, angularCallback);
     ros::Subscriber linear_sub = n.subscribe("linear_vel", 1, linearVelCallback);
     ros::Subscriber angles_sub = n.subscribe("angles", 1, anglesCallback);
     angles.resize(arm_num);
@@ -198,6 +223,15 @@ int main(int argc, char **argv)
         }
         debug_markers_pub.publish(debug_markers);
         markers_pub.publish(markers);
+
+        std_msgs::Float32 now_angle_msg;
+        now_angle_msg.data = angle;
+        now_angle_pub.publish(now_angle_msg);
+
+        std_msgs::Float32 now_linear_pos_msg;
+        now_linear_pos_msg.data = linear_pos;
+        now_linear_pos_pub.publish(now_linear_pos_msg);
+        
         ros::spinOnce(); // subsucriberの割り込み関数はこの段階で実装される
         loop_rate.sleep();
     }

@@ -30,7 +30,7 @@ int main(int argc, char **argv)
     ros::Rate loop_rate(10);
 
     // Publisher
-    ros::Publisher angle_pub = n.advertise<std_msgs::Float32>("angle", 1);
+    ros::Publisher angle_pub = n.advertise<std_msgs::Float32>("angular_vel", 1);
     ros::Publisher linear_vel_pub = n.advertise<std_msgs::Float32>("linear_vel", 1);
     // subscriber
     ros::Subscriber joy_sub = n.subscribe("joy", 1, joyCallback);
