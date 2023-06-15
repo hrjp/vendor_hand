@@ -6,7 +6,7 @@
     <node name="joy_to_value" pkg="vendor_hand" type="joy_to_value" output="screen" />
 
     <node name="arm_sim" pkg="vendor_hand" type="arm_sim" output="screen" />
-    <node name="wire_vendor" pkg="vendor_hand" type="wire_vendor" output="screen"/>
+    <node name="target_pub" pkg="vendor_hand" type="target_pub" output="screen"/>
 
     <arg name="rviz_file" default="$(find vendor_hand)/rviz/arm_sim.rviz" />
     <node pkg="rviz" type="rviz" name="rviz" args="-d $(arg rviz_file)" respawn="true" />

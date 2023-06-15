@@ -216,3 +216,6 @@ target_link_libraries(arm_sim ${catkin_LIBRARIES})
 
 add_executable(joy_to_value src/joy_to_value.cpp)
 target_link_libraries(joy_to_value ${catkin_LIBRARIES})
+
+add_executable(target_pub src/target_pub.cpp)
+target_link_libraries(target_pub ${catkin_LIBRARIES})
