@@ -40,12 +40,14 @@ void posesCallback(const geometry_msgs::PoseArray::ConstPtr &msg)
     int index = 1;
     auto now_point = target_points.at(0);
     const auto init_direction = target_points.at(index) - now_point;
-    const auto offset_angle = std::atan2(init_direction.y(), init_direction.x());
+    const auto offset_angle = -std::atan2(init_direction.y(), init_direction.x());
+    double angle_sum = 0.0;
     for(auto && angle : target_angles){
         const auto direction = target_points.at(index) - now_point;
-        angle = std::atan2(direction.y(), direction.x())-offset_angle;
+        angle = -std::atan2(direction.y(), direction.x())-offset_angle-angle_sum;
+        angle_sum += angle;
         now_point += arm_unit_length * direction.normalized();
-        if((target_points.at(index)-now_point).norm() < arm_unit_length){
+        if((now_point - target_points.at(index)).norm() < arm_unit_length){
             index++;
         }
         if(index >= target_points.size()){
