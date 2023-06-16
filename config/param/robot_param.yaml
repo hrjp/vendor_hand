@@ -1,6 +1,6 @@
-arm_num: 100
+arm_num: 70
 arm_unit_length: 0.013
 vendor_num: 2
 arm_unit_radius: 0.02
-linear_vel: 0.03
-max_unit_angle_degree: 30
+linear_vel: 0.02
+max_unit_angle_degree: 20

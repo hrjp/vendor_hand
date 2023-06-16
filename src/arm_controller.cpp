@@ -76,7 +76,7 @@ void posesCallback(const geometry_msgs::PoseArray::ConstPtr &msg)
         pose.orientation.z = quaternion.z();
         pub_arm_poses.poses.push_back(pose);
         //if(linear_sum <= (linear_num+vendor_num+2) * arm_unit_length){
-        if((now_point- target_points.at(index)).norm() < arm_unit_length*(vendor_num)){
+        if((now_point- target_points.at(index)).norm() < arm_unit_length*(vendor_num+2)){
             index++;
             if(index >= target_points.size()){
             break;
@@ -130,7 +130,7 @@ int main(int argc, char **argv)
         std::cout << "now_angle: " << now_angle << std::endl;
         std::cout << "now_linear_pos: " << now_linear_pos << std::endl;
         std::cout << "linear_num: " << linear_num << std::endl;
-        if((ros::Time::now() - init_time).toSec() > 2.0){
+        if((ros::Time::now() - init_time).toSec() > 10.0){
             std_msgs::Float32 angle_vel_msg;
             angle_vel_msg.data = target_angles.at(int(now_linear_pos/arm_unit_length))*double(vendor_num);
             angle_pub.publish(angle_vel_msg);

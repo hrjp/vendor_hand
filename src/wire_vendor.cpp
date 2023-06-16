@@ -87,7 +87,7 @@ int main(int argc, char **argv){
     ros::Publisher now_angle_pub = n.advertise<std_msgs::Float32>("now_angle", 1);
     ros::Publisher now_linear_pos_pub = n.advertise<std_msgs::Float32>("now_linear_pos", 1);
 
-    ros::Subscriber angular_sub=n.subscribe("angular_vel",10,[&](const std_msgs::Float32::ConstPtr& msg){
+    ros::Subscriber angular_sub=n.subscribe<std_msgs::Float32>("angular_vel",10,[&](const std_msgs::Float32::ConstPtr& msg){
         const auto target_angular_vel=msg->data*30.0/M_PI;
         motor0.setGoalVelocity(target_angular_vel);
     });
@@ -97,7 +97,7 @@ int main(int argc, char **argv){
         motor2.setGoalVelocity(-target_rpm);
     });
     ros::Subscriber angle_sub=n.subscribe<std_msgs::Float32>("angle",10,[&](const std_msgs::Float32::ConstPtr& msg){
-        motor0.setGoalPosition(msg->data*180.0/M_PI-init_angle[0]);
+        motor0.setGoalPosition(-msg->data*180.0/M_PI+init_angle[0]);
     });
     
     while (n.ok())  {
@@ -137,22 +137,21 @@ int main(int argc, char **argv){
        
         //right
         if(joy_msg.axes[6]<0){
-           motor0.setGoalPosition(init_angle[0]+vendor_angle_deg);
+          
         }
 
         //up
         if(joy_msg.axes[7]>0){
-            motor1.setGoalPosition(motor1.getPresentPosition()+dis_angle_deg);
-            motor2.setGoalPosition(motor2.getPresentPosition()-dis_angle_deg);
+            
         }
 
         //left
         if(joy_msg.axes[6]>0){
-            motor0.setGoalPosition(init_angle[0]-vendor_angle_deg);
+            
         }
         //down
         if(joy_msg.axes[7]<0){
-            motor0.setGoalPosition(init_angle[0]);
+           
         }
 
 
@@ -169,7 +168,7 @@ int main(int argc, char **argv){
 
 
         std_msgs::Float32 now_angle_msg;
-        now_angle_msg.data = (motor0.getPresentPosition()-init_angle[0])*M_PI/180.0;
+        now_angle_msg.data = -(motor0.getPresentPosition()-init_angle[0])*M_PI/180.0;
         now_angle_pub.publish(now_angle_msg);
 
         std_msgs::Float32 now_linear_pos_msg;
