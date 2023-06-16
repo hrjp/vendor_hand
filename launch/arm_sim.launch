@@ -5,10 +5,17 @@
     <!--
     <node name="joy_to_value" pkg="vendor_hand" type="joy_to_value" output="screen" />
     -->
-    <node name="arm_sim" pkg="vendor_hand" type="arm_sim" output="screen" />
-    <node name="target_pub" pkg="vendor_hand" type="target_pub" output="screen"/>
-    <node name="arm_controller" pkg="vendor_hand" type="arm_controller" output="screen"/>
+    
+    <node name="arm_sim" pkg="vendor_hand" type="arm_sim" output="screen">
+        <rosparam command="load" file="$(find vendor_hand)/config/param/robot_param.yaml"/>
+    </node>
+    <node name="target_pub" pkg="vendor_hand" type="target_pub" output="screen">
+        <rosparam command="load" file="$(find vendor_hand)/config/param/robot_param.yaml"/>
+    </node>
+    <node name="arm_controller" pkg="vendor_hand" type="arm_controller" output="screen">
+        <rosparam command="load" file="$(find vendor_hand)/config/param/robot_param.yaml"/>
+    </node>
 
-    <arg name="rviz_file" default="$(find vendor_hand)/rviz/arm_sim.rviz" />
+    <arg name="rviz_file" default="$(find vendor_hand)/config/rviz/arm_sim.rviz" />
     <node pkg="rviz" type="rviz" name="rviz" args="-d $(arg rviz_file)" respawn="true" />
 </launch>

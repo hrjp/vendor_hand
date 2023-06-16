@@ -122,7 +122,7 @@ int main(int argc, char **argv)
     ros::NodeHandle pn("~");
     arm_num = pn.param<int>("arm_num", 100);
     arm_unit_length = pn.param<double>("arm_unit_length", 0.013);
-    vendor_num = pn.param<int>("vendor_num", 2);
+    vendor_num = pn.param<int>("vendor_num", 1);
     const double arm_unit_radius = pn.param<double>("arm_unit_radius", 0.02);
     linear_pos = arm_unit_length * (vendor_num);
     prev_time = ros::Time::now();

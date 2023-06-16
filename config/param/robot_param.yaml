@@ -1,0 +1,5 @@
+arm_num: 100
+arm_unit_length: 0.013
+vendor_num: 2
+arm_unit_radius: 0.02
+linear_vel: 0.03

@@ -35,8 +35,8 @@ int main(int argc, char **argv)
     };
     poses_msg.header.frame_id = "map";
     poses_msg.poses.emplace_back(pose_init(0.0, 0.0));
-    poses_msg.poses.emplace_back(pose_init(0.3, 0.0));
-    poses_msg.poses.emplace_back(pose_init(0.3, 0.3));
+    poses_msg.poses.emplace_back(pose_init(0.2, 0.0));
+    poses_msg.poses.emplace_back(pose_init(0.4, 0.3));
     poses_msg.poses.emplace_back(pose_init(0.0, 0.3));
     while (n.ok())
     {
