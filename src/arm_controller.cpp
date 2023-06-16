@@ -20,6 +20,7 @@
 double arm_unit_length;
 int arm_num;
 int vendor_num;
+float max_unit_angle;
 
 // global variable
 std::vector<Eigen::Vector3d> target_points;
@@ -57,6 +58,7 @@ void posesCallback(const geometry_msgs::PoseArray::ConstPtr &msg)
         const auto direction = target_points.at(index) - now_point;
         angle = -std::atan2(direction.y(), direction.x())-offset_angle-angle_sum;
         angle/=double(vendor_num);
+        angle=std::max(-max_unit_angle, std::min(max_unit_angle, angle));
         const Eigen::Quaterniond quaternion(Eigen::AngleAxisd(-angle-angle_sum+offset_angle, Eigen::Vector3d::UnitZ()));
         angle_sum += angle;
         now_point += arm_unit_length * (quaternion * Eigen::Vector3d::UnitX());
@@ -103,6 +105,7 @@ int main(int argc, char **argv)
     vendor_num = pn.param<int>("vendor_num", 1);
     const double arm_unit_radius = pn.param<double>("arm_unit_radius", 0.02);
     const double linear_vel = pn.param<double>("linear_vel", 0.05);
+    max_unit_angle = pn.param<float>("max_unit_angle_degree", 30)*M_PI/180.0;
     ros::Rate loop_rate(10);
 
     // Publisher
