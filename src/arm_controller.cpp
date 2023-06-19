@@ -11,6 +11,7 @@
 #include <visualization_msgs/MarkerArray.h>
 #include <std_msgs/Float32.h>
 #include <std_msgs/Float32MultiArray.h>
+#include <std_msgs/Empty.h>
 #include <Eigen/Core>
 #include <Eigen/Geometry>
 #include <eigen_conversions/eigen_msg.h>
@@ -120,6 +121,9 @@ int main(int argc, char **argv)
         [&](const std_msgs::Float32::ConstPtr &msg){now_angle = msg->data;});
     ros::Subscriber linear_sub = n.subscribe<std_msgs::Float32>("now_linear_pos", 1, 
         [&](const std_msgs::Float32::ConstPtr &msg){now_linear_pos = msg->data;});
+    bool is_start = false;
+    ros::Subscriber start_sub = n.subscribe<std_msgs::Empty>("start", 1, 
+        [&](const std_msgs::Empty::ConstPtr &msg){is_start=true;});
 
     const auto init_time = ros::Time::now();
     auto prev_time = ros::Time::now();
@@ -130,7 +134,7 @@ int main(int argc, char **argv)
         std::cout << "now_angle: " << now_angle << std::endl;
         std::cout << "now_linear_pos: " << now_linear_pos << std::endl;
         std::cout << "linear_num: " << linear_num << std::endl;
-        if((ros::Time::now() - init_time).toSec() > 10.0){
+        if(is_start){
             std_msgs::Float32 angle_vel_msg;
             angle_vel_msg.data = target_angles.at(int(now_linear_pos/arm_unit_length))*double(vendor_num);
             angle_pub.publish(angle_vel_msg);

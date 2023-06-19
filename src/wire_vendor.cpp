@@ -47,9 +47,7 @@ int main(int argc, char **argv){
     dynamixel_wrapper::dynamixel_wrapper motor0(0,dxl_base,dynamixel_wrapper::XM430_W350_R,mode);
     dynamixel_wrapper::dynamixel_wrapper motor1(1,dxl_base,dynamixel_wrapper::XM430_W350_R,mode);
     dynamixel_wrapper::dynamixel_wrapper motor2(2,dxl_base,dynamixel_wrapper::XM430_W350_R,mode);
-
     dynamixel_wrapper::dynamixel_wrapper motor3(3,dxl_base,dynamixel_wrapper::XM430_W350_R,dynamixel_wrapper::Mode::Current);
-    
 
     ros::NodeHandle lSubscriber("");
     ros::Subscriber joy_sub = lSubscriber.subscribe("/joy", 50, &joy_callback);
@@ -74,30 +72,39 @@ int main(int argc, char **argv){
         motor0.getPresentPosition(),
         motor1.getPresentPosition(),
         motor2.getPresentPosition()};
-    std::vector<double> goal_angle=init_angle;
-
-    ros::Publisher pos_pub0=n.advertise<std_msgs::Float32>("motor0/angle", 10);
-    ros::Publisher pos_pub1=n.advertise<std_msgs::Float32>("motor1/angle", 10);
-    ros::Publisher pos_pub2=n.advertise<std_msgs::Float32>("motor2/angle", 10);
-
-    ros::Publisher current_pub0=n.advertise<std_msgs::Float32>("motor0/current", 10);
-    ros::Publisher current_pub1=n.advertise<std_msgs::Float32>("motor1/current", 10);
-    ros::Publisher current_pub2=n.advertise<std_msgs::Float32>("motor2/current", 10);
 
     ros::Publisher now_angle_pub = n.advertise<std_msgs::Float32>("now_angle", 1);
     ros::Publisher now_linear_pos_pub = n.advertise<std_msgs::Float32>("now_linear_pos", 1);
 
+    bool is_manual=false;
+    // subscriber
     ros::Subscriber angular_sub=n.subscribe<std_msgs::Float32>("angular_vel",10,[&](const std_msgs::Float32::ConstPtr& msg){
+        if(is_manual){return;}
         const auto target_angular_vel=msg->data*30.0/M_PI;
         motor0.setGoalVelocity(target_angular_vel);
     });
     ros::Subscriber linear_vel_sub=n.subscribe<std_msgs::Float32>("linear_vel",10,[&](const std_msgs::Float32::ConstPtr& msg){
+        if(is_manual){return;}
         const auto target_rpm=30.0/M_PI*msg->data*2.0/0.04;
         motor1.setGoalVelocity(target_rpm);
         motor2.setGoalVelocity(-target_rpm);
     });
     ros::Subscriber angle_sub=n.subscribe<std_msgs::Float32>("angle",10,[&](const std_msgs::Float32::ConstPtr& msg){
+        if(is_manual){return;}
         motor0.setGoalPosition(-msg->data*180.0/M_PI+init_angle[0]);
+    });
+
+    //manual control
+    ros::Subscriber manual_angular_sub=n.subscribe<std_msgs::Float32>("manual/angular_vel",10,[&](const std_msgs::Float32::ConstPtr& msg){
+        if(!is_manual){return;}
+        const auto target_angular_vel=msg->data*30.0/M_PI;
+        motor0.setGoalVelocity(target_angular_vel);
+    });
+    ros::Subscriber manual_linear_vel_sub=n.subscribe<std_msgs::Float32>("manual/linear_vel",10,[&](const std_msgs::Float32::ConstPtr& msg){
+        if(!is_manual){return;}
+        const auto target_rpm=30.0/M_PI*msg->data*2.0/0.04;
+        motor1.setGoalVelocity(target_rpm);
+        motor2.setGoalVelocity(-target_rpm);
     });
     
     while (n.ok())  {
@@ -105,6 +112,8 @@ int main(int argc, char **argv){
         //ROS_INFO("Positions:{%lf, %lf, %lf}",motor0.getPresentPosition(),motor1.getPresentPosition(),motor2.getPresentPosition());
         //circle
         if(joy_msg.buttons[1]){
+            //set auto mode
+            is_manual=false;
             motor0.setOperatingMode(dynamixel_wrapper::Mode::CurrentBasePosition);
             motor1.setOperatingMode(dynamixel_wrapper::Mode::Velocity);
             motor2.setOperatingMode(dynamixel_wrapper::Mode::Velocity);
@@ -126,6 +135,8 @@ int main(int argc, char **argv){
         }
         //square
         if(joy_msg.buttons[3]){
+            // set manual mode
+            is_manual=true;
             motor0.setOperatingMode(dynamixel_wrapper::Mode::Velocity);
             motor1.setOperatingMode(dynamixel_wrapper::Mode::Velocity);
             motor2.setOperatingMode(dynamixel_wrapper::Mode::Velocity);
@@ -154,7 +165,6 @@ int main(int argc, char **argv){
            
         }
 
-
         //L1
         if(joy_msg.buttons[4]){
             motor3.setTorqueEnable(true);
@@ -174,24 +184,6 @@ int main(int argc, char **argv){
         std_msgs::Float32 now_linear_pos_msg;
         now_linear_pos_msg.data = (motor1.getPresentPosition()-init_angle[1])*M_PI/180.0*0.04/2.0;
         now_linear_pos_pub.publish(now_linear_pos_msg);
-
-        std::vector<std_msgs::Float32> pos_msg(4);
-        pos_msg[0].data=motor0.getPresentPosition();
-        pos_msg[1].data=motor1.getPresentPosition();
-        pos_msg[2].data=motor2.getPresentPosition();
-        
-        pos_pub0.publish(pos_msg[0]);
-        pos_pub1.publish(pos_msg[1]);
-        pos_pub2.publish(pos_msg[2]);
-
-        std::vector<std_msgs::Float32> current_msg(4);
-        current_msg[0].data=motor0.getPresentCurrent();
-        current_msg[1].data=motor1.getPresentCurrent();
-        current_msg[2].data=motor2.getPresentCurrent();
-
-        current_pub0.publish(current_msg[0]);
-        current_pub1.publish(current_msg[1]);
-        current_pub2.publish(current_msg[2]);
         
         for(int i=0;i<joy_size;i++){
             diff_joy.axes[i]=0;

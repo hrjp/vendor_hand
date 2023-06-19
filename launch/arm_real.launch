@@ -5,7 +5,11 @@
     <!--
     <node name="joy_to_value" pkg="vendor_hand" type="joy_to_value" output="screen" />
     -->
-    
+
+    <node name="joy_to_value" pkg="vendor_hand" type="joy_to_value" output="screen">
+        <remap from="angular_vel" to="manual/angular_vel"/>
+        <remap from="linear_vel" to="manual/linear_vel"/>
+    </node>
     <node name="wire_vendor" pkg="vendor_hand" type="wire_vendor" output="screen"/>
     <node name="arm_sim" pkg="vendor_hand" type="arm_sim" output="screen">
         <rosparam command="load" file="$(find vendor_hand)/config/param/robot_param.yaml"/>
