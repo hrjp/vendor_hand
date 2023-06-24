@@ -32,89 +32,6 @@ ros::Publisher poses_pub;
 int linear_num = 0;
 double now_linear_pos = 0.0;
 
-
-void posesCallbackOld(const geometry_msgs::PoseArray::ConstPtr &msg)
-{
-    target_points.clear();
-    for(const auto &pose : msg->poses)
-    {
-        Eigen::Vector3d point(pose.position.x, pose.position.y, pose.position.z);
-        target_points.push_back(point);
-    }
-    target_angles.clear();
-    target_angles.resize(arm_num, 0.0);
-    //reverse target_points
-    std::reverse(target_points.begin(), target_points.end());
-    int index = 1;
-    auto now_point = target_points.at(0);
-    const auto init_direction = target_points.at(index) - now_point;
-    const auto offset_angle = -std::atan2(init_direction.y(), init_direction.x());
-    double angle_sum = 0.0;
-    linear_num = 0;
-    double linear_sum = (target_points.at(1)-target_points.at(0)).norm();
-    geometry_msgs::PoseArray pub_arm_poses;
-    pub_arm_poses.header.frame_id = "map";
-    pub_arm_poses.header.stamp = ros::Time::now();
-    for(auto && angle : target_angles){
-        linear_num++;
-        const auto direction = target_points.at(index) - now_point;
-        angle = -std::atan2(direction.y(), direction.x())-offset_angle-angle_sum;
-        angle/=double(vendor_num);
-        angle=std::max(-max_unit_angle, std::min(max_unit_angle, angle));
-        const Eigen::Quaterniond quaternion(Eigen::AngleAxisd(-angle-angle_sum+offset_angle, Eigen::Vector3d::UnitZ()));
-        angle_sum += angle;
-        now_point += arm_unit_length * (quaternion * Eigen::Vector3d::UnitX());
-        //now_point += arm_unit_length * direction.normalized();
-        /*if((now_point - target_points.at(index)).norm() < arm_unit_length){
-            index++;
-        }*/
-        geometry_msgs::Pose pose;
-        pose.position.x = now_point.x();
-        pose.position.y = now_point.y();
-        pose.position.z = now_point.z();
-        pose.orientation.w = quaternion.w();
-        pose.orientation.x = quaternion.x();
-        pose.orientation.y = quaternion.y();
-        pose.orientation.z = quaternion.z();
-        pub_arm_poses.poses.push_back(pose);
-        //if(linear_sum <= (linear_num+vendor_num+2) * arm_unit_length){
-        if((now_point- target_points.at(index)).norm() < arm_unit_length*(vendor_num+2)){
-            index++;
-            if(index >= target_points.size()){
-            break;
-            }
-            linear_sum += (target_points.at(index)-target_points.at(index-1)).norm();
-        }
-        if(index >= target_points.size()){
-            break;
-        }
-    }
-    //std::reverse(target_angles.begin(), target_angles.end());
-    std_msgs::Float32MultiArray pub_target_angles;
-    pub_target_angles.data = target_angles;
-    //angles_pub.publish(pub_target_angles);
-    poses_pub.publish(pub_arm_poses);
-}
-/*
-std::optional<Eigen::Vector3d> getIntarsectionPoint(const Eigen::Vector3d &p1, const double &r, const Eigen::Vector3d &p2, const Eigen::Vector3d &p3)
-{
-    Eigen::Vector3d se=p3-p2;
-    Eigen::Vector3d sr=p1-p2;
-    Eigen::Vector3d er=p1-p3;
-    double min_distance = se.normalized().x()*sr.y()-se.normalized().y()*sr.x();
-    if(min_distance < r){
-        return std::nullopt;
-    }
-    double dot1 = se.dot(sr);
-    double dot2 = se.dot(er);
-    if(dot1*dot2>0){
-        if(sr.norm()>r and er.norm()>r){
-            return std::nullopt;
-        }
-    }
-    
-}
-*/
 std::optional<Eigen::Vector3d> getIntarsectionPoint(const Eigen::Vector3d &p1, const double &r, const Eigen::Vector3d &p2, const Eigen::Vector3d &p3)
 {
     const double xd=p3.x()-p2.x();
@@ -141,8 +58,6 @@ std::optional<Eigen::Vector3d> getIntarsectionPoint(const Eigen::Vector3d &p1, c
     return Eigen::Vector3d(p2.x()+xd*s, p2.y()+yd*s, p2.z());
 }
 
-
-
 void posesCallback(const geometry_msgs::PoseArray::ConstPtr &msg)
 {
     target_points.clear();
@@ -158,10 +73,8 @@ void posesCallback(const geometry_msgs::PoseArray::ConstPtr &msg)
     int index = 1;
     auto now_point = target_points.at(0);
     const auto init_direction = target_points.at(index) - now_point;
-    const auto offset_angle = -std::atan2(init_direction.y(), init_direction.x());
     double angle_sum = -std::atan2(init_direction.y(), init_direction.x());
     linear_num = 0;
-    double linear_sum = (target_points.at(1)-target_points.at(0)).norm();
     geometry_msgs::PoseArray pub_arm_poses;
     pub_arm_poses.header.frame_id = "map";
     pub_arm_poses.header.stamp = ros::Time::now();
@@ -204,7 +117,6 @@ void posesCallback(const geometry_msgs::PoseArray::ConstPtr &msg)
         pose.orientation.z = quaternion.z();
         pub_arm_poses.poses.push_back(pose);
     }
-    //std::reverse(target_angles.begin(), target_angles.end());
     std_msgs::Float32MultiArray pub_target_angles;
     pub_target_angles.data = target_angles;
     //angles_pub.publish(pub_target_angles);
