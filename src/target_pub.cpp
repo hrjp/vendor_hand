@@ -39,19 +39,19 @@ int main(int argc, char **argv)
     poses_msg.poses.emplace_back(pose_init(0.0, 0.0));
 
     // コ shape
-    /*
+    
     poses_msg.poses.emplace_back(pose_init(0.0, 0.0));
     poses_msg.poses.emplace_back(pose_init(0.2, 0.0));
     poses_msg.poses.emplace_back(pose_init(0.2, 0.3));
     poses_msg.poses.emplace_back(pose_init(0.0, 0.3));
-    */
-    // circle shape
     
+    // circle shape
+    /*
     const auto radius = 0.1;
     for(int i=0; i<=180; i+=10){
         poses_msg.poses.emplace_back(pose_init(radius*sin(i*M_PI/180), radius-radius*cos(i*M_PI/180)));
     }
-    
+    */
     // cos shape
     /*
     for(int i=0; i<540; i+=10){
