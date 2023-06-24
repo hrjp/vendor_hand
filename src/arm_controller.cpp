@@ -257,7 +257,7 @@ int main(int argc, char **argv)
 
             std_msgs::Float32 linear_vel_msg;
             std::cout << "now_linear_pos/arm_unit_length: " << now_linear_pos/arm_unit_length << std::endl;
-            if(linear_num > int(now_linear_pos/arm_unit_length)){
+            if(linear_num-vendor_num > int(now_linear_pos/arm_unit_length)){
                 linear_vel_msg.data = linear_vel;
             }else{
                 linear_vel_msg.data = 0.0;

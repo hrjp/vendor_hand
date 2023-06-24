@@ -17,6 +17,8 @@ int main(int argc, char **argv)
     // param setting
     ros::NodeHandle pn("~");
     ros::Rate loop_rate(10);
+    const auto arm_unit_length = pn.param<double>("arm_unit_length", 0.013);
+    const auto vendor_num = pn.param<int>("vendor_num", 1);
 
     // Publisher
     ros::Publisher poses_pub = n.advertise<geometry_msgs::PoseArray>("target_poses", 1);
@@ -34,6 +36,8 @@ int main(int argc, char **argv)
         return pose;
     };
     poses_msg.header.frame_id = "map";
+    poses_msg.poses.emplace_back(pose_init(0.0, 0.0));
+
     // コ shape
     /*
     poses_msg.poses.emplace_back(pose_init(0.0, 0.0));
@@ -42,14 +46,21 @@ int main(int argc, char **argv)
     poses_msg.poses.emplace_back(pose_init(0.0, 0.3));
     */
     // circle shape
-    /*
+    
     for(int i=0; i<180; i+=10){
         poses_msg.poses.emplace_back(pose_init(0.2*sin(i*M_PI/180), 0.2-0.2*cos(i*M_PI/180)));
     }
-    */
+    
     // cos shape
+    /*
     for(int i=0; i<540; i+=10){
         poses_msg.poses.emplace_back(pose_init(double(i)/750.0,0.05*(cos(i*M_PI/180)-1)));
+    }
+    */
+
+    //offset
+    for(int i=1; i<poses_msg.poses.size(); i++){
+        poses_msg.poses.at(i).position.x += (vendor_num+1)*arm_unit_length;
     }
 
     while (n.ok())
