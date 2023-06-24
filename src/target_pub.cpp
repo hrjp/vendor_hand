@@ -38,13 +38,25 @@ int main(int argc, char **argv)
     poses_msg.header.frame_id = "map";
     poses_msg.poses.emplace_back(pose_init(0.0, 0.0));
 
-    // コ shape
-    
+    // コ shape round
+    /*    
+    const double round=0.05;
     poses_msg.poses.emplace_back(pose_init(0.0, 0.0));
-    poses_msg.poses.emplace_back(pose_init(0.2, 0.0));
-    poses_msg.poses.emplace_back(pose_init(0.2, 0.3));
-    poses_msg.poses.emplace_back(pose_init(0.0, 0.3));
+    for(int i=0; i<=90; i+=10){
+        poses_msg.poses.emplace_back(pose_init(0.15-round+round*cos((i-90.0)*M_PI/180), round+round*sin((i-90.0)*M_PI/180)));
+    }
+    for(int i=0; i<=90; i+=10){
+        poses_msg.poses.emplace_back(pose_init(0.15-round+round*cos((i-0.0)*M_PI/180), 0.2-round+round*sin((i-0.0)*M_PI/180)));
+    }
+    poses_msg.poses.emplace_back(pose_init(0.0, 0.2));
+    */
     
+    // コ shape
+    poses_msg.poses.emplace_back(pose_init(0.0, 0.0));
+    poses_msg.poses.emplace_back(pose_init(0.1, 0.0));
+    poses_msg.poses.emplace_back(pose_init(0.1, 0.15));
+    poses_msg.poses.emplace_back(pose_init(0.0, 0.15));
+
     // circle shape
     /*
     const auto radius = 0.1;
@@ -52,10 +64,11 @@ int main(int argc, char **argv)
         poses_msg.poses.emplace_back(pose_init(radius*sin(i*M_PI/180), radius-radius*cos(i*M_PI/180)));
     }
     */
+   
     // cos shape
     /*
     for(int i=0; i<540; i+=10){
-        poses_msg.poses.emplace_back(pose_init(double(i)/750.0,0.05*(cos(i*M_PI/180)-1)));
+        poses_msg.poses.emplace_back(pose_init(double(i)/1000.0,0.05*(cos(i*M_PI/180)-1)));
     }
     */
 
