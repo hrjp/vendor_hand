@@ -159,16 +159,16 @@ int main(int argc, char **argv)
     {
         const auto dt = (ros::Time::now() - prev_time).toSec();
         prev_time = ros::Time::now();
-        std::cout << "now_angle: " << now_angle << std::endl;
-        std::cout << "now_linear_pos: " << now_linear_pos << std::endl;
-        std::cout << "linear_num: " << linear_num << std::endl;
+        //std::cout << "now_angle: " << now_angle << std::endl;
+        //std::cout << "now_linear_pos: " << now_linear_pos << std::endl;
+        //std::cout << "linear_num: " << linear_num << std::endl;
         if(is_start){
             std_msgs::Float32 angle_vel_msg;
             angle_vel_msg.data = target_angles.at(int(now_linear_pos/arm_unit_length))*double(vendor_num);
             angle_pub.publish(angle_vel_msg);
 
             std_msgs::Float32 linear_vel_msg;
-            std::cout << "now_linear_pos/arm_unit_length: " << now_linear_pos/arm_unit_length << std::endl;
+            //std::cout << "now_linear_pos/arm_unit_length: " << now_linear_pos/arm_unit_length << std::endl;
             if(linear_num-vendor_num > int(now_linear_pos/arm_unit_length)){
                 linear_vel_msg.data = linear_vel;
             }else{

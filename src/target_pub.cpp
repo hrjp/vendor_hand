@@ -47,8 +47,9 @@ int main(int argc, char **argv)
     */
     // circle shape
     
-    for(int i=0; i<180; i+=10){
-        poses_msg.poses.emplace_back(pose_init(0.2*sin(i*M_PI/180), 0.2-0.2*cos(i*M_PI/180)));
+    const auto radius = 0.1;
+    for(int i=0; i<=180; i+=10){
+        poses_msg.poses.emplace_back(pose_init(radius*sin(i*M_PI/180), radius-radius*cos(i*M_PI/180)));
     }
     
     // cos shape
