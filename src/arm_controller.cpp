@@ -15,6 +15,7 @@
 #include <Eigen/Core>
 #include <Eigen/Geometry>
 #include <eigen_conversions/eigen_msg.h>
+#include <optional>
 
 
 // global parameter
@@ -32,7 +33,7 @@ int linear_num = 0;
 double now_linear_pos = 0.0;
 
 
-void posesCallback(const geometry_msgs::PoseArray::ConstPtr &msg)
+void posesCallbackOld(const geometry_msgs::PoseArray::ConstPtr &msg)
 {
     target_points.clear();
     for(const auto &pose : msg->poses)
@@ -87,6 +88,125 @@ void posesCallback(const geometry_msgs::PoseArray::ConstPtr &msg)
         if(index >= target_points.size()){
             break;
         }
+    }
+    //std::reverse(target_angles.begin(), target_angles.end());
+    std_msgs::Float32MultiArray pub_target_angles;
+    pub_target_angles.data = target_angles;
+    //angles_pub.publish(pub_target_angles);
+    poses_pub.publish(pub_arm_poses);
+}
+/*
+std::optional<Eigen::Vector3d> getIntarsectionPoint(const Eigen::Vector3d &p1, const double &r, const Eigen::Vector3d &p2, const Eigen::Vector3d &p3)
+{
+    Eigen::Vector3d se=p3-p2;
+    Eigen::Vector3d sr=p1-p2;
+    Eigen::Vector3d er=p1-p3;
+    double min_distance = se.normalized().x()*sr.y()-se.normalized().y()*sr.x();
+    if(min_distance < r){
+        return std::nullopt;
+    }
+    double dot1 = se.dot(sr);
+    double dot2 = se.dot(er);
+    if(dot1*dot2>0){
+        if(sr.norm()>r and er.norm()>r){
+            return std::nullopt;
+        }
+    }
+    
+}
+*/
+std::optional<Eigen::Vector3d> getIntarsectionPoint(const Eigen::Vector3d &p1, const double &r, const Eigen::Vector3d &p2, const Eigen::Vector3d &p3)
+{
+    const double xd=p3.x()-p2.x();
+    const double yd=p3.y()-p2.y();
+    const double X=p2.x()-p1.x();
+    const double Y=p2.y()-p1.y();
+    const double a=xd*xd+yd*yd;
+    const double b=xd*X+yd*Y;
+    const double c=X*X+Y*Y-r*r;
+    const double D=b*b-a*c;
+    if(D<0){
+        const Eigen::Vector3d sr=p1-p2;
+        const Eigen::Vector3d se=p3-p2;
+        const double p24=se.dot(sr)/se.norm();
+        const Eigen::Vector3d p4=p2+se.normalized()*p24;
+        return p1+(p4-p1).normalized()*r;
+    }
+    const double s1=(-b+std::sqrt(D))/a;
+    const double s2=(-b-std::sqrt(D))/a;
+    const double s=std::max(s1, s2);
+    if(s>1.0){
+        return std::nullopt;
+    }
+    return Eigen::Vector3d(p2.x()+xd*s, p2.y()+yd*s, p2.z());
+}
+
+
+
+void posesCallback(const geometry_msgs::PoseArray::ConstPtr &msg)
+{
+    target_points.clear();
+    for(const auto &pose : msg->poses)
+    {
+        Eigen::Vector3d point(pose.position.x, pose.position.y, pose.position.z);
+        target_points.push_back(point);
+    }
+    target_angles.clear();
+    target_angles.resize(arm_num, 0.0);
+    //reverse target_points
+    std::reverse(target_points.begin(), target_points.end());
+    int index = 1;
+    auto now_point = target_points.at(0);
+    const auto init_direction = target_points.at(index) - now_point;
+    const auto offset_angle = -std::atan2(init_direction.y(), init_direction.x());
+    double angle_sum = -std::atan2(init_direction.y(), init_direction.x());
+    linear_num = 0;
+    double linear_sum = (target_points.at(1)-target_points.at(0)).norm();
+    geometry_msgs::PoseArray pub_arm_poses;
+    pub_arm_poses.header.frame_id = "map";
+    pub_arm_poses.header.stamp = ros::Time::now();
+    for(auto && angle : target_angles){
+        linear_num++;
+        /*
+        const auto direction = target_points.at(index) - now_point;
+        angle = -std::atan2(direction.y(), direction.x())-offset_angle-angle_sum;
+        angle/=double(vendor_num);
+        */
+        Eigen::Vector3d target_point;
+        while(true){
+            const auto next_point=getIntarsectionPoint(now_point,arm_unit_length,target_points.at(index-1),target_points.at(index));
+            if(next_point){
+                target_point=next_point.value();
+                break;
+            }
+            index++;
+            if(index >= target_points.size()){
+                break;
+            }
+        }
+        if(index >= target_points.size()){
+            break;
+        }
+        const auto direction = target_point - now_point;
+        angle = -std::atan2(direction.y(), direction.x())-angle_sum;
+        angle/=double(vendor_num);
+        angle=std::max(-max_unit_angle, std::min(max_unit_angle, angle));
+        const Eigen::Quaterniond quaternion(Eigen::AngleAxisd(-angle-angle_sum, Eigen::Vector3d::UnitZ()));
+        angle_sum += angle;
+        now_point += arm_unit_length * (quaternion * Eigen::Vector3d::UnitX());
+        //now_point += arm_unit_length * direction.normalized();
+        /*if((now_point - target_points.at(index)).norm() < arm_unit_length){
+            index++;
+        }*/
+        geometry_msgs::Pose pose;
+        pose.position.x = now_point.x();
+        pose.position.y = now_point.y();
+        pose.position.z = now_point.z();
+        pose.orientation.w = quaternion.w();
+        pose.orientation.x = quaternion.x();
+        pose.orientation.y = quaternion.y();
+        pose.orientation.z = quaternion.z();
+        pub_arm_poses.poses.push_back(pose);
     }
     //std::reverse(target_angles.begin(), target_angles.end());
     std_msgs::Float32MultiArray pub_target_angles;
