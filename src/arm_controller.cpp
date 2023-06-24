@@ -167,11 +167,6 @@ void posesCallback(const geometry_msgs::PoseArray::ConstPtr &msg)
     pub_arm_poses.header.stamp = ros::Time::now();
     for(auto && angle : target_angles){
         linear_num++;
-        /*
-        const auto direction = target_points.at(index) - now_point;
-        angle = -std::atan2(direction.y(), direction.x())-offset_angle-angle_sum;
-        angle/=double(vendor_num);
-        */
         Eigen::Vector3d target_point;
         while(true){
             const auto next_point=getIntarsectionPoint(now_point,arm_unit_length,target_points.at(index-1),target_points.at(index));
@@ -189,15 +184,16 @@ void posesCallback(const geometry_msgs::PoseArray::ConstPtr &msg)
         }
         const auto direction = target_point - now_point;
         angle = -std::atan2(direction.y(), direction.x())-angle_sum;
-        angle/=double(vendor_num);
+        if(angle > M_PI){
+            angle -= 2*M_PI;
+        }
+        if(angle < -M_PI){
+            angle += 2*M_PI;
+        }
         angle=std::max(-max_unit_angle, std::min(max_unit_angle, angle));
         const Eigen::Quaterniond quaternion(Eigen::AngleAxisd(-angle-angle_sum, Eigen::Vector3d::UnitZ()));
         angle_sum += angle;
         now_point += arm_unit_length * (quaternion * Eigen::Vector3d::UnitX());
-        //now_point += arm_unit_length * direction.normalized();
-        /*if((now_point - target_points.at(index)).norm() < arm_unit_length){
-            index++;
-        }*/
         geometry_msgs::Pose pose;
         pose.position.x = now_point.x();
         pose.position.y = now_point.y();

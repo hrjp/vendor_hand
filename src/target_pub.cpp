@@ -37,16 +37,21 @@ int main(int argc, char **argv)
     // コ shape
     /*
     poses_msg.poses.emplace_back(pose_init(0.0, 0.0));
-    poses_msg.poses.emplace_back(pose_init(0.1, 0.0));
     poses_msg.poses.emplace_back(pose_init(0.2, 0.0));
     poses_msg.poses.emplace_back(pose_init(0.2, 0.3));
     poses_msg.poses.emplace_back(pose_init(0.0, 0.3));
     */
     // circle shape
-    
+    /*
     for(int i=0; i<180; i+=10){
         poses_msg.poses.emplace_back(pose_init(0.2*sin(i*M_PI/180), 0.2-0.2*cos(i*M_PI/180)));
     }
+    */
+    // cos shape
+    for(int i=0; i<540; i+=10){
+        poses_msg.poses.emplace_back(pose_init(double(i)/750.0,0.05*(cos(i*M_PI/180)-1)));
+    }
+
     while (n.ok())
     {
 
