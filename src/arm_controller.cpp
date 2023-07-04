@@ -4,6 +4,8 @@
  * @author Shunya Hara
  * @date 2023.6.15
  * @details
+ * @ref https://tjkendev.github.io/procon-library/python/geometry/circle_line_cross_point.html
+ * @ref https://yttm-work.jp/collision/collision_0006.html
  */
 
 #include <ros/ros.h>
