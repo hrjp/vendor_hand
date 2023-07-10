@@ -25,12 +25,14 @@ double arm_unit_length;
 int arm_num;
 int vendor_num;
 float max_unit_angle;
+double arm_unit_radius;
 
 // global variable
 std::vector<Eigen::Vector3d> target_points;
 std::vector<float> target_angles;
 ros::Publisher angles_pub;
 ros::Publisher poses_pub;
+ros::Publisher positions_pub;
 int linear_num = 0;
 double now_linear_pos = 0.0;
 
@@ -80,6 +82,7 @@ void posesCallback(const geometry_msgs::PoseArray::ConstPtr &msg)
     geometry_msgs::PoseArray pub_arm_poses;
     pub_arm_poses.header.frame_id = "map";
     pub_arm_poses.header.stamp = ros::Time::now();
+    visualization_msgs::MarkerArray markers;
     for(auto && angle : target_angles){
         linear_num++;
         Eigen::Vector3d target_point;
@@ -118,7 +121,35 @@ void posesCallback(const geometry_msgs::PoseArray::ConstPtr &msg)
         pose.orientation.y = quaternion.y();
         pose.orientation.z = quaternion.z();
         pub_arm_poses.poses.push_back(pose);
+
+        visualization_msgs::Marker marker;
+        marker.header.frame_id = "map";
+        marker.header.stamp = ros::Time::now();
+        marker.ns = "calc_positions";
+        marker.id = linear_num-1;
+        marker.type = visualization_msgs::Marker::LINE_STRIP;
+        marker.action = visualization_msgs::Marker::ADD;
+        marker.pose.orientation.w=1.0;
+        marker.pose.position.z=-0.0;
+        marker.lifetime = ros::Duration()*100.0;
+        for(int i=0; i<=36;i++){
+            geometry_msgs::Point p;
+            double theta=int(i)*10.0*M_PI/180.0;
+            p.x=now_point.x()+arm_unit_radius/2.0/1.414*(std::cos(theta)-std::sin(theta));
+            p.y=now_point.y()+arm_unit_radius/2.0/1.414*(std::sin(theta)+std::cos(theta));
+            p.z=0;
+            marker.points.emplace_back(p);
+        }
+        marker.scale.x = 0.001;
+        marker.scale.y = 0.005;
+        marker.scale.z = 0.005;
+        marker.color.r = 1.0;
+        marker.color.g = 0.0;
+        marker.color.b = 0.0;
+        marker.color.a = 1.0;
+        markers.markers.emplace_back(marker);
     }
+    positions_pub.publish(markers);
     std_msgs::Float32MultiArray pub_target_angles;
     pub_target_angles.data = target_angles;
     //angles_pub.publish(pub_target_angles);
@@ -134,7 +165,7 @@ int main(int argc, char **argv)
     arm_num = pn.param<int>("arm_num", 100);
     arm_unit_length = pn.param<double>("arm_unit_length", 0.013);
     vendor_num = pn.param<int>("vendor_num", 1);
-    const double arm_unit_radius = pn.param<double>("arm_unit_radius", 0.02);
+    arm_unit_radius = pn.param<double>("arm_unit_radius", 0.02);
     const double linear_vel = pn.param<double>("linear_vel", 0.05);
     max_unit_angle = pn.param<float>("max_unit_angle_degree", 30)*M_PI/180.0;
     ros::Rate loop_rate(10);
@@ -144,6 +175,7 @@ int main(int argc, char **argv)
     ros::Publisher angle_pub = n.advertise<std_msgs::Float32>("angle", 1);
     ros::Publisher linear_vel_pub = n.advertise<std_msgs::Float32>("linear_vel", 1);
     poses_pub = n.advertise<geometry_msgs::PoseArray>("poses", 1);
+    positions_pub = n.advertise<visualization_msgs::MarkerArray>("positions",1);
     //subscriber
     ros::Subscriber poses_sub = n.subscribe("target_poses", 1, posesCallback);
     double now_angle = 0.0;

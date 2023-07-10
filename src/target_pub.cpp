@@ -39,8 +39,8 @@ int main(int argc, char **argv)
     poses_msg.poses.emplace_back(pose_init(0.0, 0.0));
 
     // コ shape round
-    /*    
-    const double round=0.05;
+    
+    const double round=0.08;
     poses_msg.poses.emplace_back(pose_init(0.0, 0.0));
     for(int i=0; i<=90; i+=10){
         poses_msg.poses.emplace_back(pose_init(0.15-round+round*cos((i-90.0)*M_PI/180), round+round*sin((i-90.0)*M_PI/180)));
@@ -49,14 +49,15 @@ int main(int argc, char **argv)
         poses_msg.poses.emplace_back(pose_init(0.15-round+round*cos((i-0.0)*M_PI/180), 0.2-round+round*sin((i-0.0)*M_PI/180)));
     }
     poses_msg.poses.emplace_back(pose_init(0.0, 0.2));
-    */
+    
     
     // コ shape
+    /*
     poses_msg.poses.emplace_back(pose_init(0.0, 0.0));
     poses_msg.poses.emplace_back(pose_init(0.1, 0.0));
     poses_msg.poses.emplace_back(pose_init(0.1, 0.15));
     poses_msg.poses.emplace_back(pose_init(0.0, 0.15));
-
+    */
     // circle shape
     /*
     const auto radius = 0.1;
@@ -71,6 +72,7 @@ int main(int argc, char **argv)
         poses_msg.poses.emplace_back(pose_init(double(i)/1000.0,0.05*(cos(i*M_PI/180)-1)));
     }
     */
+    
 
     //offset
     for(int i=1; i<poses_msg.poses.size(); i++){
@@ -85,10 +87,12 @@ int main(int argc, char **argv)
         marker.header.stamp = ros::Time::now();
         marker.ns = "target_poses";
         marker.id = 0;
-        marker.type = visualization_msgs::Marker::LINE_STRIP;
+        marker.type = visualization_msgs::Marker::SPHERE_LIST;
         marker.action = visualization_msgs::Marker::ADD;
         marker.pose = poses_msg.poses.at(0);
-        marker.scale.x = 0.005;
+        marker.lifetime = ros::Duration();
+        marker.scale.x = 0.008;
+        marker.scale.y = 0.008;
         marker.color.r = 0.0;
         marker.color.g = 1.0;
         marker.color.b = 0.0;
