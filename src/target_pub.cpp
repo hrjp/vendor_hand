@@ -23,6 +23,7 @@ int main(int argc, char **argv)
     // Publisher
     ros::Publisher poses_pub = n.advertise<geometry_msgs::PoseArray>("target_poses", 1);
     ros::Publisher markers_pub = n.advertise<visualization_msgs::Marker>("target_marker", 1);
+    ros::Publisher markers2_pub = n.advertise<visualization_msgs::Marker>("target_marker2", 1);
     geometry_msgs::PoseArray poses_msg;
     auto pose_init = [](double x, double y, double z=0.0, double qw=1.0, double qx=0.0, double qy=0.0, double qz=0.0) {
         geometry_msgs::Pose pose;
@@ -101,7 +102,11 @@ int main(int argc, char **argv)
             marker.points.push_back(pose.position);
         }
         markers_pub.publish(marker);
-
+        
+        marker.ns = "target_poses2";
+        marker.type = visualization_msgs::Marker::LINE_STRIP;
+        marker.scale.x = 0.002;
+        markers2_pub.publish(marker);
         poses_msg.header.stamp = ros::Time::now();
         poses_pub.publish(poses_msg);
         ros::spinOnce();    

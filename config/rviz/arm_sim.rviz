@@ -201,6 +201,14 @@ Visualization Manager:
         calc_positions: true
       Queue Size: 100
       Value: true
+    - Class: rviz/Marker
+      Enabled: true
+      Marker Topic: /target_marker2
+      Name: Marker
+      Namespaces:
+        target_poses2: true
+      Queue Size: 100
+      Value: true
   Enabled: true
   Global Options:
     Background Color: 255; 255; 255
