@@ -5,7 +5,6 @@ Panels:
     Property Tree Widget:
       Expanded:
         - /Global Options1
-        - /PoseArray1
       Splitter Ratio: 0.5029411911964417
     Tree Height: 686
   - Class: rviz/Selection
@@ -57,21 +56,21 @@ Visualization Manager:
       Reference Frame: <Fixed Frame>
       Value: true
     - Class: rviz/MarkerArray
-      Enabled: false
+      Enabled: true
       Marker Topic: /arm_sim_markers
       Name: MarkerArray
       Namespaces:
-        {}
+        arm: true
       Queue Size: 100
-      Value: false
+      Value: true
     - Class: rviz/MarkerArray
-      Enabled: false
+      Enabled: true
       Marker Topic: /arm_sim_debug_markers
       Name: MarkerArray
       Namespaces:
-        {}
+        debug: true
       Queue Size: 100
-      Value: false
+      Value: true
     - Class: rviz/Marker
       Enabled: true
       Marker Topic: /target_marker
@@ -81,17 +80,17 @@ Visualization Manager:
       Queue Size: 100
       Value: true
     - Class: jsk_rviz_plugin/PieChart
-      Enabled: false
+      Enabled: true
       Name: TargetAngle
       Topic: /angle
-      Value: false
+      Value: true
       auto color change: false
       background color: 0; 0; 0
       backround alpha: 0
       clockwise rotate direction: false
-      foreground alpha: 0.699999988079071
+      foreground alpha: 1
       foreground alpha 2: 0.4000000059604645
-      foreground color: 25; 255; 240
+      foreground color: 0; 0; 0
       left: 10
       max color: 255; 0; 0
       max color change threthold: 0
@@ -104,17 +103,17 @@ Visualization Manager:
       text size: 14
       top: 10
     - Class: jsk_rviz_plugin/PieChart
-      Enabled: false
+      Enabled: true
       Name: TargetVel
       Topic: /linear_vel
-      Value: false
+      Value: true
       auto color change: false
       background color: 0; 0; 0
       backround alpha: 0
       clockwise rotate direction: false
-      foreground alpha: 0.699999988079071
+      foreground alpha: 1
       foreground alpha 2: 0.4000000059604645
-      foreground color: 25; 255; 240
+      foreground color: 0; 0; 0
       left: 160
       max color: 255; 0; 0
       max color change threthold: 0
@@ -145,18 +144,18 @@ Visualization Manager:
       Value: false
     - Buffer length: 100
       Class: jsk_rviz_plugin/Plotter2D
-      Enabled: false
+      Enabled: true
       Name: CurrentAngle
       Show Value: true
       Topic: /now_angle
-      Value: false
+      Value: true
       auto color change: false
       auto scale: true
       background color: 0; 0; 0
       backround alpha: 0
       border: true
-      foreground alpha: 0.699999988079071
-      foreground color: 25; 255; 240
+      foreground alpha: 1
+      foreground color: 0; 0; 0
       height: 128
       left: 10
       linewidth: 1
@@ -170,18 +169,18 @@ Visualization Manager:
       width: 128
     - Buffer length: 100
       Class: jsk_rviz_plugin/Plotter2D
-      Enabled: false
+      Enabled: true
       Name: CurrentVel
       Show Value: true
       Topic: /now_linear_pos
-      Value: false
+      Value: true
       auto color change: false
       auto scale: true
       background color: 0; 0; 0
       backround alpha: 0
       border: true
-      foreground alpha: 0.699999988079071
-      foreground color: 25; 255; 240
+      foreground alpha: 1
+      foreground color: 0; 0; 0
       height: 128
       left: 160
       linewidth: 1
@@ -237,7 +236,7 @@ Visualization Manager:
   Views:
     Current:
       Class: rviz/Orbit
-      Distance: 0.1314145177602768
+      Distance: 0.39372777938842773
       Enable Stereo Rendering:
         Stereo Eye Separation: 0.05999999865889549
         Stereo Focal Distance: 1

@@ -17,7 +17,7 @@ std_msgs::Float32 linear_vel_msg;
 void joyCallback(const sensor_msgs::Joy::ConstPtr &msg)
 {
     
-    angle_msg.data = msg->axes.at(3) * 1.0;
+    angle_msg.data = -msg->axes.at(3) * 1.0;
     linear_vel_msg.data = msg->axes.at(1) * 0.05;
 }
 

@@ -10,6 +10,7 @@
 #include <sensor_msgs/Joy.h>
 #include <std_msgs/Float32.h>
 #include <std_msgs/Float32MultiArray.h>
+#include <std_msgs/Empty.h>
 
 #include <iostream>
 #include <string>
@@ -75,6 +76,7 @@ int main(int argc, char **argv){
 
     ros::Publisher now_angle_pub = n.advertise<std_msgs::Float32>("now_angle", 1);
     ros::Publisher now_linear_pos_pub = n.advertise<std_msgs::Float32>("now_linear_pos", 1);
+    ros::Publisher start_pub = n.advertise<std_msgs::Empty>("start", 1);
 
     bool is_manual=false;
     // subscriber
@@ -168,12 +170,16 @@ int main(int argc, char **argv){
         //L1
         if(joy_msg.buttons[4]){
             motor3.setTorqueEnable(true);
-            motor3.setGoalCurrent(300.0);
+            motor3.setGoalCurrent(340.0);
         }
         //R1
         if(joy_msg.buttons[5]){
             motor3.setTorqueEnable(true);
             motor3.setGoalCurrent(50.0);
+        }
+        //share
+        if(joy_msg.buttons[8]){
+            start_pub.publish(std_msgs::Empty());
         }
 
 
