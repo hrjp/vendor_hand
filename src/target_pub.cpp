@@ -86,6 +86,14 @@ int main(int argc, char **argv)
         }
         break;
 
+    case 5:
+        // triangle shape
+        {
+            poses_msg.poses.emplace_back(pose_init(0.2, 0.0));
+            poses_msg.poses.emplace_back(pose_init(0.01, 0.2));
+        }
+        break;
+
     default:
         break;
     }
