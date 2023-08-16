@@ -14,6 +14,7 @@
 #include <Eigen/Core>
 #include <Eigen/Geometry>
 #include <eigen_conversions/eigen_msg.h>
+#include <geometry_msgs/PoseArray.h>
 
 // global parameter
 double arm_unit_length;
@@ -131,6 +132,7 @@ int main(int argc, char **argv)
     ros::Publisher debug_markers_pub = n.advertise<visualization_msgs::MarkerArray>("arm_sim_debug_markers", 1);
     ros::Publisher now_angle_pub = n.advertise<std_msgs::Float32>("now_angle", 1);
     ros::Publisher now_linear_pos_pub = n.advertise<std_msgs::Float32>("now_linear_pos", 1);
+    ros::Publisher now_pose_pub = n.advertise<geometry_msgs::PoseArray>("now_poses", 1);
     // subscriber
     ros::Subscriber angle_sub = n.subscribe("angle", 1, angleCallback);
     ros::Subscriber angular_sub = n.subscribe("angular_vel", 1, angularCallback);
@@ -223,6 +225,14 @@ int main(int argc, char **argv)
         }
         debug_markers_pub.publish(debug_markers);
         markers_pub.publish(markers);
+
+        geometry_msgs::PoseArray pose_array;
+        pose_array.header.frame_id = "map";
+        pose_array.header.stamp = ros::Time::now();
+        for(const auto & marker : markers.markers){
+            pose_array.poses.push_back(marker.pose);
+        }
+        now_pose_pub.publish(pose_array);
 
         std_msgs::Float32 now_angle_msg;
         now_angle_msg.data = angle;

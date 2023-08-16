@@ -186,6 +186,9 @@ int main(int argc, char **argv)
     bool is_start = false;
     ros::Subscriber start_sub = n.subscribe<std_msgs::Empty>("start", 1, 
         [&](const std_msgs::Empty::ConstPtr &msg){is_start=true;});
+    geometry_msgs::PoseArray now_poses;
+    ros::Subscriber now_poses_sub = n.subscribe<geometry_msgs::PoseArray>("now_poses", 1, 
+        [&](const geometry_msgs::PoseArray::ConstPtr &msg){now_poses = *msg;});
 
     const auto init_time = ros::Time::now();
     auto prev_time = ros::Time::now();
@@ -203,9 +206,10 @@ int main(int argc, char **argv)
 
             std_msgs::Float32 linear_vel_msg;
             //std::cout << "now_linear_pos/arm_unit_length: " << now_linear_pos/arm_unit_length << std::endl;
-            if(linear_num-vendor_num > int(now_linear_pos/arm_unit_length)){
+            if(now_poses.poses.size() > 0 and now_poses.poses.at(now_poses.poses.size()-linear_num+1).position.x < 0.0){
                 linear_vel_msg.data = linear_vel;
-            }else{
+            }
+            else{
                 linear_vel_msg.data = 0.0;
             }
             linear_vel_pub.publish(linear_vel_msg);
