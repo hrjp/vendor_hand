@@ -134,9 +134,9 @@ void posesCallback(const geometry_msgs::PoseArray::ConstPtr &msg)
         marker.lifetime = ros::Duration()*100.0;
         for(int i=0; i<=36;i++){
             geometry_msgs::Point p;
-            double theta=int(i)*10.0*M_PI/180.0;
-            p.x=now_point.x()+arm_unit_radius/2.0/1.414*(std::cos(theta)-std::sin(theta));
-            p.y=now_point.y()+arm_unit_radius/2.0/1.414*(std::sin(theta)+std::cos(theta));
+            const double theta=int(i)*10.0*M_PI/180.0;
+            p.x=now_point.x()+arm_unit_radius/2.0*std::cos(theta);
+            p.y=now_point.y()+arm_unit_radius/2.0*std::sin(theta);
             p.z=0;
             marker.points.emplace_back(p);
         }
