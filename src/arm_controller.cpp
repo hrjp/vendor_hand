@@ -181,11 +181,19 @@ int main(int argc, char **argv)
     double now_angle = 0.0;
     ros::Subscriber angle_sub = n.subscribe<std_msgs::Float32>("now_angle", 1, 
         [&](const std_msgs::Float32::ConstPtr &msg){now_angle = msg->data;});
+    double now_linear_pos_offset = 0.0;
+    int linear_num_offset = 0;
     ros::Subscriber linear_sub = n.subscribe<std_msgs::Float32>("now_linear_pos", 1, 
         [&](const std_msgs::Float32::ConstPtr &msg){now_linear_pos = msg->data;});
     bool is_start = false;
     ros::Subscriber start_sub = n.subscribe<std_msgs::Empty>("start", 1, 
-        [&](const std_msgs::Empty::ConstPtr &msg){is_start=true;});
+        [&](const std_msgs::Empty::ConstPtr &msg){
+            if(!is_start){
+                now_linear_pos_offset = now_linear_pos-arm_unit_length*vendor_num;
+                linear_num_offset += linear_num;
+                is_start=true;
+            }
+        });
     geometry_msgs::PoseArray now_poses;
     ros::Subscriber now_poses_sub = n.subscribe<geometry_msgs::PoseArray>("now_poses", 1, 
         [&](const geometry_msgs::PoseArray::ConstPtr &msg){now_poses = *msg;});
@@ -198,19 +206,20 @@ int main(int argc, char **argv)
         prev_time = ros::Time::now();
         //std::cout << "now_angle: " << now_angle << std::endl;
         //std::cout << "now_linear_pos: " << now_linear_pos << std::endl;
-        //std::cout << "linear_num: " << linear_num << std::endl;
+        std::cout << "linear_num_offset: " << linear_num_offset << std::endl;
         if(is_start){
             std_msgs::Float32 angle_vel_msg;
-            angle_vel_msg.data = target_angles.at(int(now_linear_pos/arm_unit_length))*double(vendor_num);
+            angle_vel_msg.data = target_angles.at(int((now_linear_pos-now_linear_pos_offset)/arm_unit_length))*double(vendor_num);
             angle_pub.publish(angle_vel_msg);
 
             std_msgs::Float32 linear_vel_msg;
             //std::cout << "now_linear_pos/arm_unit_length: " << now_linear_pos/arm_unit_length << std::endl;
-            if(now_poses.poses.size() > 0 and now_poses.poses.at(now_poses.poses.size()-linear_num+1).position.x < 0.0){
+            if(now_poses.poses.size() > 0 and now_poses.poses.at(now_poses.poses.size()-linear_num_offset+1).position.x < 0.0){
                 linear_vel_msg.data = linear_vel;
             }
             else{
                 linear_vel_msg.data = 0.0;
+                is_start = false;
             }
             linear_vel_pub.publish(linear_vel_msg);
         }
