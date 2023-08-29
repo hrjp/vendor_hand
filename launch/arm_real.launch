@@ -10,17 +10,38 @@
         <remap from="angular_vel" to="manual/angular_vel"/>
         <remap from="linear_vel" to="manual/linear_vel"/>
     </node>
-    <node name="wire_vendor" pkg="vendor_hand" type="wire_vendor" output="screen"/>
+    <node name="wire_vendor" pkg="vendor_hand" type="wire_vendor" output="screen">
+        <rosparam command="load" file="$(find vendor_hand)/config/param/robot_param.yaml"/>
+    </node>
     <node name="arm_sim" pkg="vendor_hand" type="arm_sim" output="screen">
         <rosparam command="load" file="$(find vendor_hand)/config/param/robot_param.yaml"/>
         <remap from="now_angle" to="sim/now_angle"/>
         <remap from="now_linear_pos" to="sim/now_linear_pos"/>
+        <remap from="linear_vel" to="linear_vel_unuse"/>
+        <remap from="real_linear_pos" to="now_linear_pos"/>
     </node>
+    <!--pose 1 -->
     <node name="target_pub" pkg="vendor_hand" type="target_pub" output="screen">
         <rosparam command="load" file="$(find vendor_hand)/config/param/robot_param.yaml"/>
     </node>
     <node name="arm_controller" pkg="vendor_hand" type="arm_controller" output="screen">
         <rosparam command="load" file="$(find vendor_hand)/config/param/robot_param.yaml"/>
+    </node>
+
+    <!--pose 2 -->
+    <node name="target_pub2" pkg="vendor_hand" type="target_pub" output="screen">
+        <rosparam command="load" file="$(find vendor_hand)/config/param/robot_param.yaml"/>
+        <param name="target_pose_shape_num" value="6"/>
+        <remap from="target_poses" to="pose2/target_poses" />
+        <remap from="target_marker" to="pose2/target_marker" />
+        <remap from="target_marker2" to="pose2/target_marker2" />
+    </node>
+    <node name="arm_controller2" pkg="vendor_hand" type="arm_controller" output="screen">
+        <rosparam command="load" file="$(find vendor_hand)/config/param/robot_param.yaml"/>
+        <remap from="target_poses" to="pose2/target_poses" />
+        <remap from="start" to="start2" />
+        <remap from="poses" to="pose2/poses" />
+        <remap from="positions" to="pose2/positions" />
     </node>
     <arg name="rviz_file" default="$(find vendor_hand)/config/rviz/arm_sim.rviz" />
     <node pkg="rviz" type="rviz" name="rviz" args="-d $(arg rviz_file)" respawn="true" />

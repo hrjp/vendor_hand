@@ -94,6 +94,20 @@ int main(int argc, char **argv)
         }
         break;
 
+    case 6:
+        // small circle shape
+        {
+            const auto radius = 0.05;
+            poses_msg.poses.emplace_back(pose_init(0.0, 0.0));
+            for(int i=0; i<=180; i+=10){
+                poses_msg.poses.emplace_back(pose_init(0.03+radius*sin(i*M_PI/180), radius-radius*cos(i*M_PI/180)));
+            }
+            for(int i=0; i<=180; i+=10){
+                poses_msg.poses.emplace_back(pose_init(0.03-radius*sin(i*M_PI/180), 3.0*radius-radius*cos(i*M_PI/180)));
+            }
+        }
+        break;
+
     default:
         break;
     }

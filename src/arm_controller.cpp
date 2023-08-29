@@ -190,7 +190,7 @@ int main(int argc, char **argv)
         [&](const std_msgs::Empty::ConstPtr &msg){
             if(!is_start){
                 now_linear_pos_offset = now_linear_pos-arm_unit_length*vendor_num;
-                linear_num_offset += linear_num;
+                linear_num_offset += int(now_linear_pos_offset/arm_unit_length);
                 is_start=true;
             }
         });
@@ -205,8 +205,8 @@ int main(int argc, char **argv)
         const auto dt = (ros::Time::now() - prev_time).toSec();
         prev_time = ros::Time::now();
         //std::cout << "now_angle: " << now_angle << std::endl;
-        //std::cout << "now_linear_pos: " << now_linear_pos << std::endl;
-        std::cout << "linear_num_offset: " << linear_num_offset << std::endl;
+        std::cout << "now_linear_pos: " << now_linear_pos << std::endl;
+        //std::cout << "linear_num_offset: " << linear_num_offset << std::endl;
         if(is_start){
             std_msgs::Float32 angle_vel_msg;
             angle_vel_msg.data = target_angles.at(int((now_linear_pos-now_linear_pos_offset)/arm_unit_length))*double(vendor_num);
@@ -214,7 +214,8 @@ int main(int argc, char **argv)
 
             std_msgs::Float32 linear_vel_msg;
             //std::cout << "now_linear_pos/arm_unit_length: " << now_linear_pos/arm_unit_length << std::endl;
-            if(now_poses.poses.size() > 0 and now_poses.poses.at(now_poses.poses.size()-linear_num_offset+1).position.x < 0.0){
+            if(now_poses.poses.size() > 0 and now_poses.poses.at(now_poses.poses.size()-linear_num -linear_num_offset +1).position.x < 0.0){
+                std::cout<< linear_num_offset<<std::endl;
                 linear_vel_msg.data = linear_vel;
             }
             else{

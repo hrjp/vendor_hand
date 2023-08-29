@@ -40,6 +40,8 @@ int main(int argc, char **argv){
 
     //param setting
     ros::NodeHandle pn("~");
+    double arm_unit_length = pn.param<double>("arm_unit_length", 0.013);
+    int vendor_num = pn.param<int>("vendor_num", 1);
     
     std::string port_name("/dev/ttyUSB0");
     int baudrate=1000000;
@@ -188,7 +190,7 @@ int main(int argc, char **argv){
         now_angle_pub.publish(now_angle_msg);
 
         std_msgs::Float32 now_linear_pos_msg;
-        now_linear_pos_msg.data = (motor1.getPresentPosition()-init_angle[1])*M_PI/180.0*0.04/2.0;
+        now_linear_pos_msg.data = (motor1.getPresentPosition()-init_angle[1])*M_PI/180.0*0.04/2.0 +arm_unit_length * vendor_num;
         now_linear_pos_pub.publish(now_linear_pos_msg);
         
         for(int i=0;i<joy_size;i++){
