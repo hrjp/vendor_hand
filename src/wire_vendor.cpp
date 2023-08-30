@@ -45,7 +45,7 @@ int main(int argc, char **argv){
     
     std::string port_name("/dev/ttyUSB0");
     int baudrate=1000000;
-    dynamixel_wrapper::Mode mode=dynamixel_wrapper::Mode::CurrentBasePosition;
+    dynamixel_wrapper::Mode mode=dynamixel_wrapper::Mode::Velocity;
     dynamixel_wrapper::dynamixel_wrapper_base dxl_base(port_name,baudrate);
     dynamixel_wrapper::dynamixel_wrapper motor0(0,dxl_base,dynamixel_wrapper::XM430_W350_R,mode);
     dynamixel_wrapper::dynamixel_wrapper motor1(1,dxl_base,dynamixel_wrapper::XM430_W350_R,mode);
@@ -65,6 +65,10 @@ int main(int argc, char **argv){
     motor1.setTorqueEnable(false);
     motor2.setTorqueEnable(false);
     motor3.setTorqueEnable(false);
+
+    motor0.setOperatingMode(dynamixel_wrapper::Mode::Velocity);
+    motor1.setOperatingMode(dynamixel_wrapper::Mode::Velocity);
+    motor2.setOperatingMode(dynamixel_wrapper::Mode::Velocity);
     
     motor0.setCurrentLimit(60.0);
     motor1.setCurrentLimit(10.0);
@@ -79,8 +83,9 @@ int main(int argc, char **argv){
     ros::Publisher now_angle_pub = n.advertise<std_msgs::Float32>("now_angle", 1);
     ros::Publisher now_linear_pos_pub = n.advertise<std_msgs::Float32>("now_linear_pos", 1);
     ros::Publisher start_pub = n.advertise<std_msgs::Empty>("start", 1);
+    ros::Publisher start_pub2 = n.advertise<std_msgs::Empty>("start2", 1);
 
-    bool is_manual=false;
+    bool is_manual=true;
     // subscriber
     ros::Subscriber angular_sub=n.subscribe<std_msgs::Float32>("angular_vel",10,[&](const std_msgs::Float32::ConstPtr& msg){
         if(is_manual){return;}
@@ -117,14 +122,19 @@ int main(int argc, char **argv){
         //circle
         if(joy_msg.buttons[1]){
             //set auto mode
-            is_manual=false;
-            motor0.setOperatingMode(dynamixel_wrapper::Mode::CurrentBasePosition);
-            motor1.setOperatingMode(dynamixel_wrapper::Mode::Velocity);
-            motor2.setOperatingMode(dynamixel_wrapper::Mode::Velocity);
-            motor0.setTorqueEnable(true);
-            motor1.setTorqueEnable(true);
-            motor2.setTorqueEnable(true);
-            motor3.setTorqueEnable(true);
+            if(is_manual){
+                is_manual=false;
+                motor0.setTorqueEnable(false);
+                motor1.setTorqueEnable(false);
+                motor2.setTorqueEnable(false);
+                motor0.setOperatingMode(dynamixel_wrapper::Mode::CurrentBasePosition);
+                motor1.setOperatingMode(dynamixel_wrapper::Mode::Velocity);
+                motor2.setOperatingMode(dynamixel_wrapper::Mode::Velocity);
+                motor0.setTorqueEnable(true);
+                motor1.setTorqueEnable(true);
+                motor2.setTorqueEnable(true);
+                motor3.setTorqueEnable(true);         
+            }
         }
         //closs
         if(joy_msg.buttons[0]){
@@ -140,14 +150,19 @@ int main(int argc, char **argv){
         //square
         if(joy_msg.buttons[3]){
             // set manual mode
-            is_manual=true;
-            motor0.setOperatingMode(dynamixel_wrapper::Mode::Velocity);
-            motor1.setOperatingMode(dynamixel_wrapper::Mode::Velocity);
-            motor2.setOperatingMode(dynamixel_wrapper::Mode::Velocity);
-            motor0.setTorqueEnable(true);
-            motor1.setTorqueEnable(true);
-            motor2.setTorqueEnable(true);
-            motor3.setTorqueEnable(true);
+            if(!is_manual){
+                is_manual=true;
+                motor0.setTorqueEnable(false);
+                motor1.setTorqueEnable(false);
+                motor2.setTorqueEnable(false);
+                motor0.setOperatingMode(dynamixel_wrapper::Mode::Velocity);
+                motor1.setOperatingMode(dynamixel_wrapper::Mode::Velocity);
+                motor2.setOperatingMode(dynamixel_wrapper::Mode::Velocity);
+                motor0.setTorqueEnable(true);
+                motor1.setTorqueEnable(true);
+                motor2.setTorqueEnable(true);
+                motor3.setTorqueEnable(true);
+            }
         }
        
         //right
@@ -182,6 +197,10 @@ int main(int argc, char **argv){
         //share
         if(joy_msg.buttons[8]){
             start_pub.publish(std_msgs::Empty());
+        }
+        //share
+        if(joy_msg.buttons[9]){
+            start_pub2.publish(std_msgs::Empty());
         }
 
 
