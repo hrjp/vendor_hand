@@ -70,8 +70,8 @@ int main(int argc, char **argv)
     case 3:
         // circle shape
         {
-            const auto radius = 0.08;
-            for(int i=0; i<=200; i+=10){
+            const auto radius = 0.1;
+            for(int i=0; i<=180; i+=10){
                 poses_msg.poses.emplace_back(pose_init(radius*sin(i*M_PI/180), radius-radius*cos(i*M_PI/180)));
             }
         }

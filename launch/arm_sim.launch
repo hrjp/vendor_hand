@@ -19,6 +19,7 @@
     </node>
 
     <!--pose 2 -->
+    <!--
     <node name="target_pub2" pkg="vendor_hand" type="target_pub" output="screen">
         <rosparam command="load" file="$(find vendor_hand)/config/param/robot_param.yaml"/>
         <param name="target_pose_shape_num" value="6"/>
@@ -33,7 +34,7 @@
         <remap from="poses" to="pose2/poses" />
         <remap from="positions" to="pose2/positions" />
     </node>
-
+-->
     <arg name="rviz_file" default="$(find vendor_hand)/config/rviz/arm_sim.rviz" />
     <node pkg="rviz" type="rviz" name="rviz" args="-d $(arg rviz_file)" respawn="true" />
 </launch>
