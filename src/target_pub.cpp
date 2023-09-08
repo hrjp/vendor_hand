@@ -45,7 +45,7 @@ int main(int argc, char **argv)
     case 1:
         // コ shape round
         {
-            const double round=0.075;
+            const double round=0.0;
             poses_msg.poses.emplace_back(pose_init(0.0, 0.0));
             for(int i=0; i<=90; i+=10){
                 poses_msg.poses.emplace_back(pose_init(0.15-round+round*cos((i-90.0)*M_PI/180), round+round*sin((i-90.0)*M_PI/180)));
@@ -71,7 +71,7 @@ int main(int argc, char **argv)
         // circle shape
         {
             const auto radius = 0.1;
-            for(int i=0; i<=180; i+=10){
+            for(int i=0; i<=200; i+=10){
                 poses_msg.poses.emplace_back(pose_init(radius*sin(i*M_PI/180), radius-radius*cos(i*M_PI/180)));
             }
         }
