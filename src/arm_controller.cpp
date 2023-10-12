@@ -188,14 +188,15 @@ int main(int argc, char **argv)
     ros::Subscriber linear_sub = n.subscribe<std_msgs::Float32>("now_linear_pos", 1, 
         [&](const std_msgs::Float32::ConstPtr &msg){now_linear_pos = msg->data;});
     bool is_start = false;
-    ros::Subscriber start_sub = n.subscribe<std_msgs::Empty>("start", 1, 
-        [&](const std_msgs::Empty::ConstPtr &msg){
+    auto start_func = [&](const std_msgs::Empty::ConstPtr &msg){
             if(!is_start){
                 now_linear_pos_offset = now_linear_pos-arm_unit_length*vendor_num;
                 linear_num_offset += int(now_linear_pos_offset/arm_unit_length);
                 is_start=true;
             }
-        });
+        };
+    ros::Subscriber start_sub = n.subscribe<std_msgs::Empty>("start", 1, start_func);
+    ros::Subscriber global_start_sub = n.subscribe<std_msgs::Empty>("/start", 1, start_func);
     geometry_msgs::PoseArray now_poses;
     ros::Subscriber now_poses_sub = n.subscribe<geometry_msgs::PoseArray>("now_poses", 1, 
         [&](const geometry_msgs::PoseArray::ConstPtr &msg){now_poses = *msg;});
