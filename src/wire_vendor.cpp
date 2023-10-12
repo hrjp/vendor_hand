@@ -48,9 +48,12 @@ int main(int argc, char **argv){
     dynamixel_wrapper::Mode mode=dynamixel_wrapper::Mode::Velocity;
     dynamixel_wrapper::dynamixel_wrapper_base dxl_base(port_name,baudrate);
     dynamixel_wrapper::dynamixel_wrapper motor0(0,dxl_base,dynamixel_wrapper::XM430_W350_R,mode);
-    dynamixel_wrapper::dynamixel_wrapper motor1(1,dxl_base,dynamixel_wrapper::XM430_W350_R,mode);
     dynamixel_wrapper::dynamixel_wrapper motor2(2,dxl_base,dynamixel_wrapper::XM430_W350_R,mode);
-    dynamixel_wrapper::dynamixel_wrapper motor3(3,dxl_base,dynamixel_wrapper::XM430_W350_R,dynamixel_wrapper::Mode::Current);
+    dynamixel_wrapper::dynamixel_wrapper motor3(4,dxl_base,dynamixel_wrapper::XM430_W350_R,dynamixel_wrapper::Mode::Current);
+
+    dynamixel_wrapper::dynamixel_wrapper rmotor0(5,dxl_base,dynamixel_wrapper::XM430_W350_R,mode);
+    dynamixel_wrapper::dynamixel_wrapper rmotor2(1,dxl_base,dynamixel_wrapper::XM430_W350_R,mode);
+    dynamixel_wrapper::dynamixel_wrapper rmotor3(3,dxl_base,dynamixel_wrapper::XM430_W350_R,dynamixel_wrapper::Mode::Current);
 
     ros::NodeHandle lSubscriber("");
     ros::Subscriber joy_sub = lSubscriber.subscribe("/joy", 50, &joy_callback);
@@ -62,23 +65,33 @@ int main(int argc, char **argv){
     diff_joy.buttons.resize(joy_size);
 
     motor0.setTorqueEnable(false);
-    motor1.setTorqueEnable(false);
     motor2.setTorqueEnable(false);
     motor3.setTorqueEnable(false);
 
+    rmotor0.setTorqueEnable(false);
+    rmotor2.setTorqueEnable(false);
+    rmotor3.setTorqueEnable(false);
+
     motor0.setOperatingMode(dynamixel_wrapper::Mode::Velocity);
-    motor1.setOperatingMode(dynamixel_wrapper::Mode::Velocity);
     motor2.setOperatingMode(dynamixel_wrapper::Mode::Velocity);
+
+    rmotor0.setOperatingMode(dynamixel_wrapper::Mode::Velocity);
+    rmotor2.setOperatingMode(dynamixel_wrapper::Mode::Velocity);
     
     motor0.setCurrentLimit(60.0);
-    motor1.setCurrentLimit(10.0);
     motor2.setCurrentLimit(10.0);
     motor3.setCurrentLimit(350.0);
+
+    rmotor0.setCurrentLimit(60.0);
+    rmotor2.setCurrentLimit(10.0);
+    rmotor3.setCurrentLimit(350.0);
     
     const std::vector<double> init_angle={
         motor0.getPresentPosition(),
-        motor1.getPresentPosition(),
         motor2.getPresentPosition()};
+    const std::vector<double> rinit_angle={
+        rmotor0.getPresentPosition(),
+        rmotor2.getPresentPosition()};
 
     ros::Publisher now_angle_pub = n.advertise<std_msgs::Float32>("now_angle", 1);
     ros::Publisher now_linear_pos_pub = n.advertise<std_msgs::Float32>("now_linear_pos", 1);
@@ -95,7 +108,6 @@ int main(int argc, char **argv){
     ros::Subscriber linear_vel_sub=n.subscribe<std_msgs::Float32>("linear_vel",10,[&](const std_msgs::Float32::ConstPtr& msg){
         if(is_manual){return;}
         const auto target_rpm=30.0/M_PI*msg->data*2.0/0.04;
-        motor1.setGoalVelocity(target_rpm);
         motor2.setGoalVelocity(-target_rpm);
     });
     ros::Subscriber angle_sub=n.subscribe<std_msgs::Float32>("angle",10,[&](const std_msgs::Float32::ConstPtr& msg){
@@ -108,12 +120,13 @@ int main(int argc, char **argv){
         if(!is_manual){return;}
         const auto target_angular_vel=msg->data*30.0/M_PI;
         motor0.setGoalVelocity(target_angular_vel);
+        rmotor0.setGoalVelocity(target_angular_vel);
     });
     ros::Subscriber manual_linear_vel_sub=n.subscribe<std_msgs::Float32>("manual/linear_vel",10,[&](const std_msgs::Float32::ConstPtr& msg){
         if(!is_manual){return;}
         const auto target_rpm=30.0/M_PI*msg->data*2.0/0.04;
-        motor1.setGoalVelocity(target_rpm);
         motor2.setGoalVelocity(-target_rpm);
+        rmotor2.setGoalVelocity(target_rpm);
     });
     
     while (n.ok())  {
@@ -125,13 +138,10 @@ int main(int argc, char **argv){
             if(is_manual){
                 is_manual=false;
                 motor0.setTorqueEnable(false);
-                motor1.setTorqueEnable(false);
                 motor2.setTorqueEnable(false);
                 motor0.setOperatingMode(dynamixel_wrapper::Mode::CurrentBasePosition);
-                motor1.setOperatingMode(dynamixel_wrapper::Mode::Velocity);
                 motor2.setOperatingMode(dynamixel_wrapper::Mode::Velocity);
                 motor0.setTorqueEnable(true);
-                motor1.setTorqueEnable(true);
                 motor2.setTorqueEnable(true);
                 motor3.setTorqueEnable(true);         
             }
@@ -139,13 +149,13 @@ int main(int argc, char **argv){
         //closs
         if(joy_msg.buttons[0]){
             motor0.setTorqueEnable(false);
-            motor1.setTorqueEnable(false);
             motor2.setTorqueEnable(false);
             
         }
         //triangle
         if(joy_msg.buttons[2]){
             motor3.setTorqueEnable(false);
+            rmotor3.setTorqueEnable(false);
         }
         //square
         if(joy_msg.buttons[3]){
@@ -153,15 +163,20 @@ int main(int argc, char **argv){
             if(!is_manual){
                 is_manual=true;
                 motor0.setTorqueEnable(false);
-                motor1.setTorqueEnable(false);
                 motor2.setTorqueEnable(false);
                 motor0.setOperatingMode(dynamixel_wrapper::Mode::Velocity);
-                motor1.setOperatingMode(dynamixel_wrapper::Mode::Velocity);
                 motor2.setOperatingMode(dynamixel_wrapper::Mode::Velocity);
                 motor0.setTorqueEnable(true);
-                motor1.setTorqueEnable(true);
                 motor2.setTorqueEnable(true);
                 motor3.setTorqueEnable(true);
+
+                rmotor0.setTorqueEnable(false);
+                rmotor2.setTorqueEnable(false);
+                rmotor0.setOperatingMode(dynamixel_wrapper::Mode::Velocity);
+                rmotor2.setOperatingMode(dynamixel_wrapper::Mode::Velocity);
+                rmotor0.setTorqueEnable(true);
+                rmotor2.setTorqueEnable(true);
+                rmotor3.setTorqueEnable(true);
             }
         }
        
@@ -187,12 +202,12 @@ int main(int argc, char **argv){
         //L1
         if(joy_msg.buttons[4]){
             motor3.setTorqueEnable(true);
-            motor3.setGoalCurrent(340.0);
+            motor3.setGoalCurrent(-340.0);
         }
         //R1
         if(joy_msg.buttons[5]){
-            motor3.setTorqueEnable(true);
-            motor3.setGoalCurrent(50.0);
+            rmotor3.setTorqueEnable(true);
+            rmotor3.setGoalCurrent(340.0);
         }
         //share
         if(joy_msg.buttons[8]){
@@ -209,7 +224,7 @@ int main(int argc, char **argv){
         now_angle_pub.publish(now_angle_msg);
 
         std_msgs::Float32 now_linear_pos_msg;
-        now_linear_pos_msg.data = (motor1.getPresentPosition()-init_angle[1])*M_PI/180.0*0.04/2.0 +arm_unit_length * vendor_num;
+        now_linear_pos_msg.data = (-motor2.getPresentPosition()-init_angle[2])*M_PI/180.0*0.04/2.0 +arm_unit_length * vendor_num;
         now_linear_pos_pub.publish(now_linear_pos_msg);
         
         for(int i=0;i<joy_size;i++){
