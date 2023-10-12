@@ -26,6 +26,7 @@ int arm_num;
 int vendor_num;
 float max_unit_angle;
 double arm_unit_radius;
+std::string base_frame_id;
 
 // global variable
 std::vector<Eigen::Vector3d> target_points;
@@ -80,7 +81,7 @@ void posesCallback(const geometry_msgs::PoseArray::ConstPtr &msg)
     double angle_sum = -std::atan2(init_direction.y(), init_direction.x());
     linear_num = 0;
     geometry_msgs::PoseArray pub_arm_poses;
-    pub_arm_poses.header.frame_id = "map";
+    pub_arm_poses.header.frame_id = base_frame_id;
     pub_arm_poses.header.stamp = ros::Time::now();
     visualization_msgs::MarkerArray markers;
     for(auto && angle : target_angles){
@@ -123,7 +124,7 @@ void posesCallback(const geometry_msgs::PoseArray::ConstPtr &msg)
         pub_arm_poses.poses.push_back(pose);
 
         visualization_msgs::Marker marker;
-        marker.header.frame_id = "map";
+        marker.header.frame_id = base_frame_id;
         marker.header.stamp = ros::Time::now();
         marker.ns = "calc_positions";
         marker.id = linear_num-1;
@@ -168,6 +169,7 @@ int main(int argc, char **argv)
     arm_unit_radius = pn.param<double>("arm_unit_radius", 0.02);
     const double linear_vel = pn.param<double>("linear_vel", 0.05);
     max_unit_angle = pn.param<float>("max_unit_angle_degree", 30)*M_PI/180.0;
+    base_frame_id = pn.param<std::string>("base_frame_id", "map");
     ros::Rate loop_rate(10);
 
     // Publisher

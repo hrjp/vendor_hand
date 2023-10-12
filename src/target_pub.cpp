@@ -19,6 +19,7 @@ int main(int argc, char **argv)
     ros::Rate loop_rate(10);
     const auto arm_unit_length = pn.param<double>("arm_unit_length", 0.013);
     const auto vendor_num = pn.param<int>("vendor_num", 1);
+    const auto base_frame_id = pn.param<std::string>("base_frame_id", "map");
 
     // Publisher
     ros::Publisher poses_pub = n.advertise<geometry_msgs::PoseArray>("target_poses", 1);
@@ -37,7 +38,7 @@ int main(int argc, char **argv)
         pose.position.z = z;
         return pose;
     };
-    poses_msg.header.frame_id = "map";
+    poses_msg.header.frame_id = base_frame_id;
     poses_msg.poses.emplace_back(pose_init(0.0, 0.0));
 
     const int target_pose_shape_num = pn.param<int>("target_pose_shape_num", 0);
@@ -132,7 +133,7 @@ int main(int argc, char **argv)
     {
 
         visualization_msgs::Marker marker;
-        marker.header.frame_id = "map";
+        marker.header.frame_id = base_frame_id;
         marker.header.stamp = ros::Time::now();
         marker.ns = "target_poses";
         marker.id = 0;
