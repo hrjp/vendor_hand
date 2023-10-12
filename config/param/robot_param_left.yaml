@@ -4,7 +4,7 @@ vendor_num: 2
 arm_unit_radius: 0.02
 linear_vel: 0.015
 max_unit_angle_degree: 20
-base_frame_id: map
+base_frame_id: left_link
 
 # 1 コ round
 # 2 コ

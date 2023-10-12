@@ -29,7 +29,7 @@ Panels:
     Name: TabletControllerPanel
   - Class: jsk_rviz_plugin/PublishTopic
     Name: PublishTopic
-    Topic: /start
+    Topic: left/start
   - Class: jsk_rviz_plugin/PublishTopic
     Name: PublishTopic
     Topic: /start2
@@ -57,30 +57,6 @@ Visualization Manager:
       Plane: XY
       Plane Cell Count: 10
       Reference Frame: <Fixed Frame>
-      Value: true
-    - Class: rviz/MarkerArray
-      Enabled: true
-      Marker Topic: /arm_sim_markers
-      Name: MarkerArray
-      Namespaces:
-        {}
-      Queue Size: 100
-      Value: true
-    - Class: rviz/MarkerArray
-      Enabled: true
-      Marker Topic: /arm_sim_debug_markers
-      Name: MarkerArray
-      Namespaces:
-        {}
-      Queue Size: 100
-      Value: true
-    - Class: rviz/Marker
-      Enabled: true
-      Marker Topic: /target_marker
-      Name: Marker
-      Namespaces:
-        {}
-      Queue Size: 100
       Value: true
     - Class: jsk_rviz_plugin/PieChart
       Enabled: true
@@ -128,23 +104,6 @@ Visualization Manager:
       size: 128
       text size: 14
       top: 10
-    - Alpha: 1
-      Arrow Length: 0.30000001192092896
-      Axes Length: 0.009999999776482582
-      Axes Radius: 0.003000000026077032
-      Class: rviz/PoseArray
-      Color: 255; 25; 0
-      Enabled: false
-      Head Length: 0.07000000029802322
-      Head Radius: 0.029999999329447746
-      Name: PoseArray
-      Queue Size: 10
-      Shaft Length: 0.23000000417232513
-      Shaft Radius: 0.009999999776482582
-      Shape: Axes
-      Topic: /poses
-      Unreliable: false
-      Value: false
     - Buffer length: 100
       Class: jsk_rviz_plugin/Plotter2D
       Enabled: true
@@ -195,46 +154,94 @@ Visualization Manager:
       top: 190
       update interval: 0.03999999910593033
       width: 128
-    - Class: rviz/MarkerArray
+    - Class: rviz/Group
+      Displays:
+        - Class: rviz/Marker
+          Enabled: true
+          Marker Topic: /left/target_marker2
+          Name: Marker
+          Namespaces:
+            target_poses2: true
+          Queue Size: 100
+          Value: true
+        - Class: rviz/Marker
+          Enabled: true
+          Marker Topic: /left/target_marker
+          Name: Marker
+          Namespaces:
+            target_poses: true
+          Queue Size: 100
+          Value: true
+        - Class: rviz/MarkerArray
+          Enabled: true
+          Marker Topic: /left/positions
+          Name: MarkerArray
+          Namespaces:
+            calc_positions: true
+          Queue Size: 100
+          Value: true
+        - Class: rviz/MarkerArray
+          Enabled: true
+          Marker Topic: /left/arm_sim_markers
+          Name: MarkerArray
+          Namespaces:
+            arm: true
+          Queue Size: 100
+          Value: true
+        - Class: rviz/MarkerArray
+          Enabled: true
+          Marker Topic: /left/arm_sim_debug_markers
+          Name: MarkerArray
+          Namespaces:
+            debug: true
+          Queue Size: 100
+          Value: true
       Enabled: true
-      Marker Topic: /positions
-      Name: MarkerArray
-      Namespaces:
-        {}
-      Queue Size: 100
-      Value: true
-    - Class: rviz/Marker
+      Name: LeftArm
+    - Class: rviz/Group
+      Displays:
+        - Class: rviz/Marker
+          Enabled: true
+          Marker Topic: /right/target_marker2
+          Name: Marker
+          Namespaces:
+            target_poses2: true
+          Queue Size: 100
+          Value: true
+        - Class: rviz/Marker
+          Enabled: true
+          Marker Topic: /right/target_marker
+          Name: Marker
+          Namespaces:
+            target_poses: true
+          Queue Size: 100
+          Value: true
+        - Class: rviz/MarkerArray
+          Enabled: true
+          Marker Topic: /right/positions
+          Name: MarkerArray
+          Namespaces:
+            calc_positions: true
+          Queue Size: 100
+          Value: true
+        - Class: rviz/MarkerArray
+          Enabled: true
+          Marker Topic: /right/arm_sim_markers
+          Name: MarkerArray
+          Namespaces:
+            arm: true
+          Queue Size: 100
+          Value: true
+        - Class: rviz/MarkerArray
+          Enabled: true
+          Marker Topic: /right/arm_sim_debug_markers
+          Name: MarkerArray
+          Namespaces:
+            debug: true
+          Queue Size: 100
+          Value: true
       Enabled: true
-      Marker Topic: /target_marker2
-      Name: Marker
-      Namespaces:
-        {}
-      Queue Size: 100
-      Value: true
-    - Class: rviz/MarkerArray
-      Enabled: true
-      Marker Topic: /pose2/positions
-      Name: MarkerArray
-      Namespaces:
-        {}
-      Queue Size: 100
-      Value: true
-    - Class: rviz/Marker
-      Enabled: true
-      Marker Topic: /pose2/target_marker
-      Name: Marker
-      Namespaces:
-        {}
-      Queue Size: 100
-      Value: true
-    - Class: rviz/Marker
-      Enabled: true
-      Marker Topic: /pose2/target_marker2
-      Name: Marker
-      Namespaces:
-        {}
-      Queue Size: 100
-      Value: true
+      Name: RightArm
   Enabled: true
   Global Options:
     Background Color: 255; 255; 255
@@ -263,7 +270,7 @@ Visualization Manager:
   Views:
     Current:
       Class: rviz/Orbit
-      Distance: 0.39372777938842773
+      Distance: 0.4938921332359314
       Enable Stereo Rendering:
         Stereo Eye Separation: 0.05999999865889549
         Stereo Focal Distance: 1
