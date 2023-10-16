@@ -100,6 +100,13 @@ int main(int argc, char **argv){
     ros::Publisher rstart_pub2 = n.advertise<std_msgs::Empty>("right/start2", 1);
 
     bool is_manual=true;
+    enum class ManualMode{
+        None,
+        Left,
+        Right,
+        All
+    };
+    ManualMode manual_state=ManualMode::All;
     // subscriber left
     ros::Subscriber angular_sub=n.subscribe<std_msgs::Float32>("left/angular_vel",10,[&](const std_msgs::Float32::ConstPtr& msg){
         if(is_manual){return;}
@@ -136,14 +143,31 @@ int main(int argc, char **argv){
     ros::Subscriber manual_angular_sub=n.subscribe<std_msgs::Float32>("manual/angular_vel",10,[&](const std_msgs::Float32::ConstPtr& msg){
         if(!is_manual){return;}
         const auto target_angular_vel=msg->data*30.0/M_PI;
-        motor0.setGoalVelocity(target_angular_vel);
-        rmotor0.setGoalVelocity(target_angular_vel);
+        if(manual_state==ManualMode::Left){
+            motor0.setGoalVelocity(target_angular_vel);
+        }
+        else if(manual_state==ManualMode::Right){
+            rmotor0.setGoalVelocity(-target_angular_vel);
+        }
+        else{
+            motor0.setGoalVelocity(target_angular_vel);
+            rmotor0.setGoalVelocity(target_angular_vel);
+        }
     });
     ros::Subscriber manual_linear_vel_sub=n.subscribe<std_msgs::Float32>("manual/linear_vel",10,[&](const std_msgs::Float32::ConstPtr& msg){
         if(!is_manual){return;}
         const auto target_rpm=30.0/M_PI*msg->data*2.0/0.04;
-        motor2.setGoalVelocity(-target_rpm);
-        rmotor2.setGoalVelocity(target_rpm);
+        if(manual_state==ManualMode::Left){
+            motor2.setGoalVelocity(-target_rpm);
+        }
+            
+        else if(manual_state==ManualMode::Right){
+            rmotor2.setGoalVelocity(target_rpm);
+        }
+        else{
+            motor2.setGoalVelocity(-target_rpm);
+            rmotor2.setGoalVelocity(target_rpm);
+        }
     });
     
     while (n.ok())  {
@@ -218,17 +242,17 @@ int main(int argc, char **argv){
        
         //right
         if(joy_msg.axes[6]<0){
-          
+          manual_state=ManualMode::Right;
         }
 
         //up
         if(joy_msg.axes[7]>0){
-            
+            manual_state=ManualMode::All;
         }
 
         //left
         if(joy_msg.axes[6]>0){
-            
+            manual_state=ManualMode::Left;
         }
         //down
         if(joy_msg.axes[7]<0){
@@ -245,6 +269,16 @@ int main(int argc, char **argv){
             rmotor3.setTorqueEnable(true);
             rmotor3.setGoalCurrent(100.0);
         }
+        //L2
+        if(joy_msg.buttons[6]){
+            motor3.setTorqueEnable(true);
+            motor3.setGoalCurrent(-340.0);
+        }
+        //R2
+        if(joy_msg.buttons[7]){
+            rmotor3.setTorqueEnable(true);
+            rmotor3.setGoalCurrent(340.0);
+        }
         //share
         if(joy_msg.buttons[8]){
             start_pub.publish(std_msgs::Empty());
@@ -258,6 +292,7 @@ int main(int argc, char **argv){
         std_msgs::Float32 now_angle_msg;
         now_angle_msg.data = -(motor0.getPresentPosition()-init_angle[0])*M_PI/180.0;
         now_angle_pub.publish(now_angle_msg);
+
         std_msgs::Float32 now_linear_pos_msg;
         now_linear_pos_msg.data = -(motor2.getPresentPosition()-init_angle[1])*M_PI/180.0*0.04/2.0 +arm_unit_length * vendor_num;
         now_linear_pos_pub.publish(now_linear_pos_msg);
@@ -266,6 +301,7 @@ int main(int argc, char **argv){
         std_msgs::Float32 rnow_angle_msg;
         rnow_angle_msg.data = -(rmotor0.getPresentPosition()-rinit_angle[0])*M_PI/180.0;
         rnow_angle_pub.publish(rnow_angle_msg);
+
         std_msgs::Float32 rnow_linear_pos_msg;
         rnow_linear_pos_msg.data = (rmotor2.getPresentPosition()-rinit_angle[1])*M_PI/180.0*0.04/2.0 +arm_unit_length * vendor_num;
         rnow_linear_pos_pub.publish(rnow_linear_pos_msg);

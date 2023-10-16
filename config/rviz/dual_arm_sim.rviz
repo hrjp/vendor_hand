@@ -32,7 +32,7 @@ Panels:
     Topic: left/start
   - Class: jsk_rviz_plugin/PublishTopic
     Name: PublishTopic
-    Topic: right/start2
+    Topic: right/start
   - Class: jsk_rviz_plugin/PublishTopic
     Name: PublishTopic
     Topic: start
@@ -62,10 +62,10 @@ Visualization Manager:
       Reference Frame: <Fixed Frame>
       Value: true
     - Class: jsk_rviz_plugin/PieChart
-      Enabled: true
+      Enabled: false
       Name: TargetAngle
       Topic: /angle
-      Value: true
+      Value: false
       auto color change: false
       background color: 0; 0; 0
       backround alpha: 0
@@ -85,10 +85,10 @@ Visualization Manager:
       text size: 14
       top: 10
     - Class: jsk_rviz_plugin/PieChart
-      Enabled: true
+      Enabled: false
       Name: TargetVel
       Topic: /linear_vel
-      Value: true
+      Value: false
       auto color change: false
       background color: 0; 0; 0
       backround alpha: 0
@@ -109,11 +109,11 @@ Visualization Manager:
       top: 10
     - Buffer length: 100
       Class: jsk_rviz_plugin/Plotter2D
-      Enabled: true
+      Enabled: false
       Name: CurrentAngle
       Show Value: true
       Topic: /left/now_angle
-      Value: true
+      Value: false
       auto color change: false
       auto scale: true
       background color: 0; 0; 0
@@ -134,11 +134,11 @@ Visualization Manager:
       width: 128
     - Buffer length: 100
       Class: jsk_rviz_plugin/Plotter2D
-      Enabled: true
+      Enabled: false
       Name: CurrentVel
       Show Value: true
       Topic: /left/now_linear_pos
-      Value: true
+      Value: false
       auto color change: false
       auto scale: true
       background color: 0; 0; 0
@@ -281,9 +281,9 @@ Visualization Manager:
         Value: false
       Field of View: 0.7853981852531433
       Focal Point:
-        X: 0.09275523573160172
-        Y: 0.10228507965803146
-        Z: 0.2689377963542938
+        X: 0.24411791563034058
+        Y: 0.0203146580606699
+        Z: 0.268855482339859
       Focal Shape Fixed Size: true
       Focal Shape Size: 0.05000000074505806
       Invert Z Axis: false
