@@ -112,7 +112,7 @@ Visualization Manager:
       Enabled: true
       Name: CurrentAngle
       Show Value: true
-      Topic: /now_angle
+      Topic: /left/now_angle
       Value: true
       auto color change: false
       auto scale: true
@@ -137,7 +137,7 @@ Visualization Manager:
       Enabled: true
       Name: CurrentVel
       Show Value: true
-      Topic: /now_linear_pos
+      Topic: /left/now_linear_pos
       Value: true
       auto color change: false
       auto scale: true
@@ -273,7 +273,7 @@ Visualization Manager:
   Views:
     Current:
       Class: rviz/Orbit
-      Distance: 0.4938921332359314
+      Distance: 0.5931577682495117
       Enable Stereo Rendering:
         Stereo Eye Separation: 0.05999999865889549
         Stereo Focal Distance: 1
