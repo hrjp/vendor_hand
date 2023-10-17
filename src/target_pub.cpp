@@ -121,13 +121,23 @@ int main(int argc, char **argv)
         break;
     
     case 8:
-        // U shape
+        //c  shape
         {
-            const auto radius = 0.08;
-            for(int i=0; i<=100; i+=5){
-                poses_msg.poses.emplace_back(pose_init(0.03+2.0*radius*sin(i*M_PI/180), -(radius-radius*cos(i*M_PI/180))));
+            const auto radius = 0.16;
+            for(int i=0; i<=60; i+=5){
+                poses_msg.poses.emplace_back(pose_init(0.03+radius*sin(i*M_PI/180), -(radius-radius*cos(i*M_PI/180))));
             }
             //poses_msg.poses.emplace_back(pose_init(-0.05, 2.0*radius));
+        }
+        break;
+
+    case 9:
+        //c  shape
+        {
+            poses_msg.poses.emplace_back(pose_init(0.01, 0.0));
+            poses_msg.poses.emplace_back(pose_init(0.05, 0.0));
+            poses_msg.poses.emplace_back(pose_init(0.1, 0.0));
+            poses_msg.poses.emplace_back(pose_init(0.15, 0.0));
         }
         break;
 

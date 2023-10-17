@@ -12,7 +12,7 @@
     </node>
 
     <group ns="left">
-        <node pkg="tf" type="static_transform_publisher" name="left_transform" args="0 0 0 0.5236 0 0 map left_link 100"/>
+        <node pkg="tf" type="static_transform_publisher" name="left_transform" args="0 0.033 0 0.5236 0 0 map left_link 100"/>
         <node name="arm_sim" pkg="vendor_hand" type="arm_sim" output="screen">
             <rosparam command="load" file="$(find vendor_hand)/config/param/robot_param_left.yaml"/>
             <remap from="now_angle" to="sim/now_angle"/>
@@ -48,7 +48,7 @@
     </group>
 
     <group ns="right">
-        <node pkg="tf" type="static_transform_publisher" name="right_transform" args="0 0 0 -0.5236 0 3.1415 map right_link 100"/>
+        <node pkg="tf" type="static_transform_publisher" name="right_transform" args="0 -0.033 0 -0.5236 0 3.1415 map right_link 100"/>
         <node name="arm_sim" pkg="vendor_hand" type="arm_sim" output="screen">
             <rosparam command="load" file="$(find vendor_hand)/config/param/robot_param_right.yaml"/>
             <remap from="now_angle" to="sim/now_angle"/>

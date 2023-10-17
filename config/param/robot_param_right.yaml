@@ -1,4 +1,4 @@
-arm_num: 70
+arm_num: 30
 arm_unit_length: 0.013
 vendor_num: 2
 arm_unit_radius: 0.02
@@ -10,4 +10,4 @@ base_frame_id: right_link
 # 2 コ
 # 3 circle
 # 4 cos
-target_pose_shape_num: 8
+target_pose_shape_num: 9
