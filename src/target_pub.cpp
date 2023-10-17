@@ -132,7 +132,7 @@ int main(int argc, char **argv)
         break;
 
     case 9:
-        //c  shape
+        //linear shape
         {
             poses_msg.poses.emplace_back(pose_init(0.01, 0.0));
             poses_msg.poses.emplace_back(pose_init(0.05, 0.0));
@@ -141,9 +141,36 @@ int main(int argc, char **argv)
         }
         break;
 
+    case 10:
+        //hyotan  shape
+        {
+            poses_msg.poses.emplace_back(pose_init(0.05, 0.0));
+            poses_msg.poses.emplace_back(pose_init(0.125, 0.05));
+            poses_msg.poses.emplace_back(pose_init(0.2, 0.03));
+            poses_msg.poses.emplace_back(pose_init(0.275, 0.05));
+            poses_msg.poses.emplace_back(pose_init(0.35, 0.0));
+        }
+        break;
+    
+    case 11:
+        //hyotan  shape exp
+        {
+            for(int i=0; i<=280; i+=10){
+                const double x=0.01*i;
+                poses_msg.poses.emplace_back(pose_init(double(i)/2000.0+0.01,0.007*(cos(i*M_PI/180)-1)*(cos(i*M_PI/180)-1)));
+            }
+            for(int i=400; i<=620; i+=10){
+                const double x=0.01*i;
+                poses_msg.poses.emplace_back(pose_init(double(i-100)/2000.0+0.01,0.007*(cos(i*M_PI/180)-1)*(cos(i*M_PI/180)-1)));
+            }
+        }
+        break;
+    
     default:
         break;
     }
+
+    
     
     //offset
     for(int i=1; i<poses_msg.poses.size(); i++){

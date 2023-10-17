@@ -34,7 +34,7 @@ int main(int argc, char **argv){
     
     ros::init(argc, argv, "wire_vendor_dual_node");
     ros::NodeHandle n;
-    double rate=20.0;
+    double rate=10.0;
     //制御周期10Hz
     ros::Rate loop_rate(rate);
 
@@ -42,7 +42,7 @@ int main(int argc, char **argv){
     ros::NodeHandle pn("~");
     double arm_unit_length = pn.param<double>("arm_unit_length", 0.013);
     int vendor_num = pn.param<int>("vendor_num", 1);
-    
+    const int max_unit_angle = pn.param<float>("max_unit_angle_degree", 30);
     std::string port_name("/dev/ttyUSB0");
     int baudrate=1000000;
     dynamixel_wrapper::Mode mode=dynamixel_wrapper::Mode::Velocity;
@@ -56,7 +56,7 @@ int main(int argc, char **argv){
     dynamixel_wrapper::dynamixel_wrapper rmotor3(3,dxl_base,dynamixel_wrapper::XM430_W350_R,dynamixel_wrapper::Mode::Current);
 
     ros::NodeHandle lSubscriber("");
-    ros::Subscriber joy_sub = lSubscriber.subscribe("/joy", 50, &joy_callback);
+    ros::Subscriber joy_sub = lSubscriber.subscribe("/joy", 20, &joy_callback);
     joy_msg.axes.resize(joy_size);
     joy_msg.buttons.resize(joy_size);
     pre_joy.axes.resize(joy_size);
@@ -108,50 +108,61 @@ int main(int argc, char **argv){
     };
     ManualMode manual_state=ManualMode::All;
     // subscriber left
-    ros::Subscriber angular_sub=n.subscribe<std_msgs::Float32>("left/angular_vel",10,[&](const std_msgs::Float32::ConstPtr& msg){
+    ros::Subscriber angular_sub=n.subscribe<std_msgs::Float32>("left/angular_vel",1,[&](const std_msgs::Float32::ConstPtr& msg){
         if(is_manual){return;}
         const auto target_angular_vel=msg->data*30.0/M_PI;
         motor0.setGoalVelocity(target_angular_vel);
     });
-    ros::Subscriber linear_vel_sub=n.subscribe<std_msgs::Float32>("left/linear_vel",10,[&](const std_msgs::Float32::ConstPtr& msg){
+    ros::Subscriber linear_vel_sub=n.subscribe<std_msgs::Float32>("left/linear_vel",1,[&](const std_msgs::Float32::ConstPtr& msg){
         if(is_manual){return;}
         const auto target_rpm=30.0/M_PI*msg->data*2.0/0.04;
         motor2.setGoalVelocity(-target_rpm);
     });
-    ros::Subscriber angle_sub=n.subscribe<std_msgs::Float32>("left/angle",10,[&](const std_msgs::Float32::ConstPtr& msg){
+    ros::Subscriber angle_sub=n.subscribe<std_msgs::Float32>("left/angle",1,[&](const std_msgs::Float32::ConstPtr& msg){
         if(is_manual){return;}
         motor0.setGoalPosition(-msg->data*180.0/M_PI+init_angle[0]);
     });
 
     // subscriber right
-    ros::Subscriber rangular_sub=n.subscribe<std_msgs::Float32>("right/angular_vel",10,[&](const std_msgs::Float32::ConstPtr& msg){
+    ros::Subscriber rangular_sub=n.subscribe<std_msgs::Float32>("right/angular_vel",1,[&](const std_msgs::Float32::ConstPtr& msg){
         if(is_manual){return;}
         const auto target_angular_vel=msg->data*30.0/M_PI;
         rmotor0.setGoalVelocity(target_angular_vel);
     });
-    ros::Subscriber rlinear_vel_sub=n.subscribe<std_msgs::Float32>("right/linear_vel",10,[&](const std_msgs::Float32::ConstPtr& msg){
+    ros::Subscriber rlinear_vel_sub=n.subscribe<std_msgs::Float32>("right/linear_vel",1,[&](const std_msgs::Float32::ConstPtr& msg){
         if(is_manual){return;}
         const auto target_rpm=30.0/M_PI*msg->data*2.0/0.04;
         rmotor2.setGoalVelocity(target_rpm);
     });
-    ros::Subscriber rangle_sub=n.subscribe<std_msgs::Float32>("right/angle",10,[&](const std_msgs::Float32::ConstPtr& msg){
+    ros::Subscriber rangle_sub=n.subscribe<std_msgs::Float32>("right/angle",1,[&](const std_msgs::Float32::ConstPtr& msg){
         if(is_manual){return;}
         rmotor0.setGoalPosition(-msg->data*180.0/M_PI+rinit_angle[0]);
     });
 
     //manual control
-    ros::Subscriber manual_angular_sub=n.subscribe<std_msgs::Float32>("manual/angular_vel",10,[&](const std_msgs::Float32::ConstPtr& msg){
+    ros::Subscriber manual_angular_sub=n.subscribe<std_msgs::Float32>("manual/angular_vel",1,[&](const std_msgs::Float32::ConstPtr& msg){
         if(!is_manual){return;}
+        auto angle_vel_limit=[](double now_angle, double limit_angle, double target_vel){
+            if(now_angle>limit_angle){
+                return std::min(target_vel,0.0);
+            }
+            else if(now_angle<-limit_angle){
+                return std::max(target_vel,0.0);
+            }
+            else{
+                return target_vel;
+            }
+        };
         const auto target_angular_vel=msg->data*30.0/M_PI;
         if(manual_state==ManualMode::Left){
-            motor0.setGoalVelocity(target_angular_vel);
+            motor0.setGoalVelocity(angle_vel_limit(motor0.getPresentPosition()-init_angle[0],max_unit_angle*vendor_num,target_angular_vel));
         }
         else if(manual_state==ManualMode::Right){
-            rmotor0.setGoalVelocity(-target_angular_vel);
+            rmotor0.setGoalVelocity(angle_vel_limit(rmotor0.getPresentPosition()-rinit_angle[0],max_unit_angle*vendor_num,-target_angular_vel));
         }
         else{
-            motor0.setGoalVelocity(target_angular_vel);
-            rmotor0.setGoalVelocity(target_angular_vel);
+            motor0.setGoalVelocity(angle_vel_limit(motor0.getPresentPosition()-init_angle[0],max_unit_angle*vendor_num,target_angular_vel));
+            rmotor0.setGoalVelocity(angle_vel_limit(rmotor0.getPresentPosition()-rinit_angle[0],max_unit_angle*vendor_num,target_angular_vel));
         }
     });
     ros::Subscriber manual_linear_vel_sub=n.subscribe<std_msgs::Float32>("manual/linear_vel",10,[&](const std_msgs::Float32::ConstPtr& msg){
