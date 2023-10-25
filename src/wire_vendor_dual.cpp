@@ -81,12 +81,15 @@ int main(int argc, char **argv){
     rmotor3.setCurrentLimit(350.0);
     
     const std::vector<double> init_angle={
-        motor0.getPresentPosition(),
+        53.0,
         motor2.getPresentPosition()};
     const std::vector<double> rinit_angle={
-        rmotor0.getPresentPosition(),
+        206.0,
         rmotor2.getPresentPosition()};
-
+    std::cout<<"init_angle[0]:"<<init_angle[0]<<std::endl;
+    std::cout<<"init_angle[1]:"<<init_angle[1]<<std::endl;
+    std::cout<<"rinit_angle[0]:"<<rinit_angle[0]<<std::endl;
+    std::cout<<"rinit_angle[1]:"<<rinit_angle[1]<<std::endl;
     // Publisher left
     ros::Publisher now_angle_pub = n.advertise<std_msgs::Float32>("left/now_angle", 1);
     ros::Publisher now_linear_pos_pub = n.advertise<std_msgs::Float32>("left/now_linear_pos", 1);

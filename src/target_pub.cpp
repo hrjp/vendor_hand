@@ -166,6 +166,18 @@ int main(int argc, char **argv)
         }
         break;
     
+    case 12:
+        //hyotan  shape exp
+        {
+            // cos shape
+        {
+            for(int i=0; i<650; i+=10){
+                poses_msg.poses.emplace_back(pose_init(double(i)/2500.0+0.01,-0.02*(cos(i*M_PI/180)-1)));
+            }
+        }
+        }
+        break;
+    
     default:
         break;
     }
