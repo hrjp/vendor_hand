@@ -178,6 +178,17 @@ int main(int argc, char **argv)
         }
         break;
     
+    case 13:
+        //c  shape
+        {
+            const auto radius = 0.11;
+            for(int i=0; i<=60; i+=5){
+                poses_msg.poses.emplace_back(pose_init(0.0+radius*sin(i*M_PI/180), -(radius-radius*cos(i*M_PI/180))));
+            }
+            //poses_msg.poses.emplace_back(pose_init(-0.05, 2.0*radius));
+        }
+        break;
+
     default:
         break;
     }

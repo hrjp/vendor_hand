@@ -74,11 +74,11 @@ int main(int argc, char **argv){
     
     motor0.setCurrentLimit(60.0);
     motor2.setCurrentLimit(10.0);
-    motor3.setCurrentLimit(350.0);
+    motor3.setCurrentLimit(550.0);
 
     rmotor0.setCurrentLimit(60.0);
     rmotor2.setCurrentLimit(10.0);
-    rmotor3.setCurrentLimit(350.0);
+    rmotor3.setCurrentLimit(550.0);
     
     const std::vector<double> init_angle={
         53.0,
@@ -286,12 +286,12 @@ int main(int argc, char **argv){
         //L2
         if(joy_msg.buttons[6]){
             motor3.setTorqueEnable(true);
-            motor3.setGoalCurrent(-340.0);
+            motor3.setGoalCurrent(-540.0);
         }
         //R2
         if(joy_msg.buttons[7]){
             rmotor3.setTorqueEnable(true);
-            rmotor3.setGoalCurrent(340.0);
+            rmotor3.setGoalCurrent(540.0);
         }
         //share
         if(joy_msg.buttons[8]){
