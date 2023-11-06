@@ -5,7 +5,7 @@ import rospy
 import rtde_receive
 import rtde_control
 from geometry_msgs.msg import Pose
-
+from std_msgs.msg import Float32MultiArray
 class ur_controller_node :
     def __init__(self):
         rospy.init_node("ur_controller_node")
@@ -14,17 +14,18 @@ class ur_controller_node :
         self.rtde_c = rtde_control.RTDEControlInterface(ip)
         self.rtde_r = rtde_receive.RTDEReceiveInterface(ip)
 
-        self.pose_sub = rospy.Subscriber("arm_pose", Pose, self.pose_callback)
+        self.target_sub = rospy.Subscriber("arm_target_value", Float32MultiArray, self.target_callback, queue_size=1)
 
         self.init_pose = self.rtde_r.getActualTCPPose()
 
     def __del__(self):
         self.rtde_c.stopScript()
     
-    def pose_callback(self, msg):
-        pose = [self.init_pose[0]+msg.position.x, self.init_pose[1]+msg.position.y, self.init_pose[2]+msg.position.z,
-                self.init_pose[3], self.init_pose[4], self.init_pose[5]]
-        self.rtde_c.moveL(pose, 0.01, 0.2)
+    def target_callback(self, msg):
+        pose = []
+        for i in range(6):
+            pose.append(msg.data[i]+self.init_pose[i])
+        self.rtde_c.moveL(pose, msg.data[6], msg.data[7])
 
 
 if __name__ == '__main__':
