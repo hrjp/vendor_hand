@@ -272,18 +272,21 @@ int main(int argc, char **argv){
         }
         //down
         if(joy_msg.axes[7]<0){
-           
+           std_msgs::Float32MultiArray arm_msg;
+            arm_msg.data.resize(8);
+            arm_msg.data = {0.0, 0.0, -0.17, 0.0, 0.0, 0.0,0.05,0.4};
+            arm_pub.publish(arm_msg);
         }
 
         //L1
         if(joy_msg.buttons[4]){
             motor3.setTorqueEnable(true);
-            motor3.setGoalCurrent(-100.0);
+            motor3.setGoalCurrent(-150.0);
         }
         //R1
         if(joy_msg.buttons[5]){
             rmotor3.setTorqueEnable(true);
-            rmotor3.setGoalCurrent(100.0);
+            rmotor3.setGoalCurrent(150.0);
         }
         //L2
         if(joy_msg.buttons[6]){
@@ -297,19 +300,19 @@ int main(int argc, char **argv){
         }
         //share
         if(joy_msg.buttons[8]){
-            //start_pub.publish(std_msgs::Empty());
             std_msgs::Float32MultiArray arm_msg;
             arm_msg.data.resize(8);
-            arm_msg.data = {0.0, 0.0, -0.1, 0.0, 0.0, 0.0,0.01,0.1};
+            arm_msg.data = {0.0, 0.0, 0.0, 0.0, 0.0, 0.0,0.03,0.3};
             arm_pub.publish(arm_msg);
         }
-        //share
+        //option
         if(joy_msg.buttons[9]){
-            //rstart_pub.publish(std_msgs::Empty());
+            start_pub.publish(std_msgs::Empty());
+            rstart_pub.publish(std_msgs::Empty());
             std_msgs::Float32MultiArray arm_msg;
             arm_msg.data.resize(8);
-            arm_msg.data = {0.0, 0.0, 0.0, 0.0, 0.0, 0.0,0.01,0.1};
-            arm_pub.publish(arm_msg);
+            arm_msg.data = {0.0, 0.0, -0.16, 0.0, 0.0, 0.0,0.018,0.1};
+            //arm_pub.publish(arm_msg);
         }
 
         // publish left status

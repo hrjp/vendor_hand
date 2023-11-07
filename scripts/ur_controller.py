@@ -6,11 +6,12 @@ import rtde_receive
 import rtde_control
 from geometry_msgs.msg import Pose
 from std_msgs.msg import Float32MultiArray
+
 class ur_controller_node :
     def __init__(self):
         rospy.init_node("ur_controller_node")
         
-        ip = rospy.get_param('ip', '192.168.0.119')
+        ip = rospy.get_param('ip', '192.168.0.130')
         self.rtde_c = rtde_control.RTDEControlInterface(ip)
         self.rtde_r = rtde_receive.RTDEReceiveInterface(ip)
 
