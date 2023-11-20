@@ -1,0 +1,5 @@
+repositories:
+  dynamixel_wrapper:
+    type: git
+    url: https://github.com/KobeKosenRobotics/dynamixel_wrapper
+    version: master

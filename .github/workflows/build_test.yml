@@ -1,0 +1,29 @@
+name: build test
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: 0 0 * * *
+  pull_request:
+jobs:
+  job1:
+    name: BuildTest
+    runs-on: ubuntu-20.04
+    timeout-minutes: 120
+    strategy:
+      fail-fast: false
+      matrix:
+        rosdistro: [noetic]
+    steps:
+        - name: get repository name
+            run: echo "REPOSITORY_NAME=${GITHUB_REPOSITORY#${GITHUB_REPOSITORY_OWNER}/}" >> $GITHUB_ENV
+        - uses: ros-tooling/setup-ros@v0.7
+          with:
+            required-ros-distributions: ${{ matrix.rosdistro }}
+        - uses: ros-tooling/action-ros-ci@v0.3
+          with:
+            import-token: ${{ secrets.GITHUB_TOKEN }}
+            import-token: ${{ secrets.REPO_TOKEN }}
+            package-name: ${{ env.REPOSITORY_NAME }}
+            target-ros1-distro: ${{ matrix.rosdistro }}
+            vcs-repo-file-url: https://raw.githubusercontent.com/${{ github.actor }}/${{ env.REPOSITORY_NAME }}/depend_packages.repos
