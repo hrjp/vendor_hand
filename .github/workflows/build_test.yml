@@ -26,4 +26,4 @@ jobs:
             import-token: ${{ secrets.GITHUB_TOKEN }}
             package-name: ${{ env.REPOSITORY_NAME }}
             target-ros1-distro: ${{ matrix.rosdistro }}
-            vcs-repo-file-url: https://raw.githubusercontent.com/${{ github.actor }}/${{ env.REPOSITORY_NAME }}/depend_packages.repos
+            vcs-repo-file-url: /depend_packages.repos
