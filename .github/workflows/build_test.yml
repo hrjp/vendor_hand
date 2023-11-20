@@ -23,7 +23,7 @@ jobs:
             required-ros-distributions: ${{ matrix.rosdistro }}
         - uses: ros-tooling/action-ros-ci@v0.3
           with:
-            import-token: ${{ secrets.REPO_TOKEN }}
+            import-token: ${{ secrets.GITHUB_TOKEN }}
             package-name: ${{ env.REPOSITORY_NAME }}
             target-ros1-distro: ${{ matrix.rosdistro }}
             vcs-repo-file-url: https://raw.githubusercontent.com/${{ github.actor }}/${{ env.REPOSITORY_NAME }}/depend_packages.repos
