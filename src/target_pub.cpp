@@ -135,7 +135,7 @@ int main(int argc, char **argv)
         //linear shape
         {
             poses_msg.poses.emplace_back(pose_init(0.01, 0.0));
-            poses_msg.poses.emplace_back(pose_init(0.05, 0.0));
+            poses_msg.poses.emplace_back(pose_init(0.09, 0.0));
             poses_msg.poses.emplace_back(pose_init(0.1, 0.0));
             //poses_msg.poses.emplace_back(pose_init(0.15, 0.0));
         }
@@ -182,7 +182,7 @@ int main(int argc, char **argv)
         //c  shape
         {
             const auto radius = 0.11;
-            for(int i=0; i<=60; i+=5){
+            for(int i=0; i<=125; i+=5){
                 poses_msg.poses.emplace_back(pose_init(0.0+radius*sin(i*M_PI/180), -(radius-radius*cos(i*M_PI/180))));
             }
             //poses_msg.poses.emplace_back(pose_init(-0.05, 2.0*radius));

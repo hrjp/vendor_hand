@@ -274,7 +274,8 @@ int main(int argc, char **argv){
         if(joy_msg.axes[7]<0){
            std_msgs::Float32MultiArray arm_msg;
             arm_msg.data.resize(8);
-            arm_msg.data = {0.0, 0.0, -0.17, 0.0, 0.0, 0.0,0.05,0.4};
+            //arm_msg.data = {0.0, 0.0, -0.185, 0.0, 0.0, 0.0,0.2,0.4};//hyotan
+            arm_msg.data = {0.0, 0.0, 0.1, 0.0, 0.0, 0.0,0.15,0.3};
             arm_pub.publish(arm_msg);
         }
 
@@ -302,16 +303,17 @@ int main(int argc, char **argv){
         if(joy_msg.buttons[8]){
             std_msgs::Float32MultiArray arm_msg;
             arm_msg.data.resize(8);
-            arm_msg.data = {0.0, 0.0, 0.0, 0.0, 0.0, 0.0,0.03,0.3};
+            arm_msg.data = {0.0, 0.0, 0.0, 0.0, 0.0, 0.0,0.15,0.4};
             arm_pub.publish(arm_msg);
         }
         //option
         if(joy_msg.buttons[9]){
-            start_pub.publish(std_msgs::Empty());
+            //start_pub.publish(std_msgs::Empty());
             rstart_pub.publish(std_msgs::Empty());
             std_msgs::Float32MultiArray arm_msg;
             arm_msg.data.resize(8);
-            arm_msg.data = {0.0, 0.0, -0.16, 0.0, 0.0, 0.0,0.018,0.1};
+            arm_msg.data = {0.0, 0.0, -0.23, 0.0, 0.0, 0.0,0.05,0.2};
+            //arm_msg.data = {0.0, 0.0, -0.17, 0.0, 0.0, 0.0,0.025,0.2};//sikaku
             //arm_pub.publish(arm_msg);
         }
 
