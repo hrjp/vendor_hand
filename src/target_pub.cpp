@@ -137,7 +137,7 @@ int main(int argc, char **argv)
             poses_msg.poses.emplace_back(pose_init(0.01, 0.0));
             poses_msg.poses.emplace_back(pose_init(0.09, 0.0));
             poses_msg.poses.emplace_back(pose_init(0.1, 0.0));
-            //poses_msg.poses.emplace_back(pose_init(0.15, 0.0));
+            poses_msg.poses.emplace_back(pose_init(0.15, 0.0));
         }
         break;
 
