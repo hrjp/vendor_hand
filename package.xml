@@ -68,6 +68,10 @@
   <exec_depend>std_msgs</exec_depend>
   <exec_depend>tf</exec_depend>
   <exec_depend>jsk_visualization</exec_depend>
+  <exec_depend>usb_cam</exec_depend>
+  <exec_depend>libuvc_camera</exec_depend>
+  <exec_depend>apriltag_ros</exec_depend>
+  <exec_depend>image_proc</exec_depend>
 
 
   <!-- The export tag contains other, unspecified, tags -->
