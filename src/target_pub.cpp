@@ -135,9 +135,9 @@ int main(int argc, char **argv)
         //linear shape
         {
             poses_msg.poses.emplace_back(pose_init(0.01, 0.0));
-            poses_msg.poses.emplace_back(pose_init(0.05, 0.0));
+            poses_msg.poses.emplace_back(pose_init(0.09, 0.0));
             poses_msg.poses.emplace_back(pose_init(0.1, 0.0));
-            poses_msg.poses.emplace_back(pose_init(0.15, 0.0));
+            //poses_msg.poses.emplace_back(pose_init(0.15, 0.0));
         }
         break;
 
@@ -148,7 +148,7 @@ int main(int argc, char **argv)
             poses_msg.poses.emplace_back(pose_init(0.125, 0.05));
             poses_msg.poses.emplace_back(pose_init(0.2, 0.03));
             poses_msg.poses.emplace_back(pose_init(0.275, 0.05));
-            poses_msg.poses.emplace_back(pose_init(0.35, 0.0));
+            //poses_msg.poses.emplace_back(pose_init(0.35, 0.0));
         }
         break;
     
@@ -182,8 +182,22 @@ int main(int argc, char **argv)
         //c  shape
         {
             const auto radius = 0.11;
-            for(int i=0; i<=60; i+=5){
+            for(int i=0; i<=125; i+=5){
                 poses_msg.poses.emplace_back(pose_init(0.0+radius*sin(i*M_PI/180), -(radius-radius*cos(i*M_PI/180))));
+            }
+            //poses_msg.poses.emplace_back(pose_init(-0.05, 2.0*radius));
+        }
+        break;
+    
+    case 14:
+        //mini hyotan
+        {
+            const auto radius = 0.05;
+            for(int i=40; i<=140; i+=5){
+                poses_msg.poses.emplace_back(pose_init(radius-radius*cos(i*M_PI/180),-0.03+radius*sin(i*M_PI/180)));
+            }
+            for(int i=40; i<=140; i+=5){
+                poses_msg.poses.emplace_back(pose_init(0.1+radius-radius*cos(i*M_PI/180), -0.03+radius*sin(i*M_PI/180)));
             }
             //poses_msg.poses.emplace_back(pose_init(-0.05, 2.0*radius));
         }
