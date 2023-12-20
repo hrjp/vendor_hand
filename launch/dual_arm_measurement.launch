@@ -1,0 +1,103 @@
+<launch>
+    <node name="joy_node" pkg="joy" type="joy_node">
+        <param name="dev" value="/dev/input/js1" />
+    </node>
+
+    <node name="joy_to_value" pkg="vendor_hand" type="joy_to_value" output="screen">
+        <remap from="angular_vel" to="manual/angular_vel"/>
+        <remap from="linear_vel" to="manual/linear_vel"/>
+    </node>
+    <node name="wire_vendor_dual" pkg="vendor_hand" type="wire_vendor_dual" output="screen">
+        <rosparam command="load" file="$(find vendor_hand)/config/param/robot_param.yaml"/>
+    </node>
+
+    <include file="$(find vendor_hand)/launch/apriltag.launch"/>
+
+    <group ns="left">
+        <node pkg="tf" type="static_transform_publisher" name="left_transform" args="0 0.033 0 0.5236 0 0 map left_link 100"/>
+        <node name="arm_sim" pkg="vendor_hand" type="arm_sim" output="screen">
+            <rosparam command="load" file="$(find vendor_hand)/config/param/robot_param_left.yaml"/>
+            <remap from="now_angle" to="sim/now_angle"/>
+            <remap from="now_linear_pos" to="sim/now_linear_pos"/>
+            <remap from="linear_vel" to="linear_vel_unuse"/>
+            <remap from="real_linear_pos" to="now_linear_pos"/>
+        </node>
+        <!--pose 1 -->
+        <node name="target_pub" pkg="vendor_hand" type="target_pub" output="screen">
+            <rosparam command="load" file="$(find vendor_hand)/config/param/robot_param_left.yaml"/>
+        </node>
+        <node name="arm_controller" pkg="vendor_hand" type="arm_controller" output="screen">
+            <rosparam command="load" file="$(find vendor_hand)/config/param/robot_param_left.yaml"/>
+        </node>
+
+        <!--pose 2 -->
+        <!--
+        <node name="target_pub2" pkg="vendor_hand" type="target_pub" output="screen">
+            <rosparam command="load" file="$(find vendor_hand)/config/param/robot_param.yaml"/>
+            <param name="target_pose_shape_num" value="6"/>
+            <remap from="target_poses" to="pose2/target_poses" />
+            <remap from="target_marker" to="pose2/target_marker" />
+            <remap from="target_marker2" to="pose2/target_marker2" />
+        </node>
+        <node name="arm_controller2" pkg="vendor_hand" type="arm_controller" output="screen">
+            <rosparam command="load" file="$(find vendor_hand)/config/param/robot_param.yaml"/>
+            <remap from="target_poses" to="pose2/target_poses" />
+            <remap from="start" to="start2" />
+            <remap from="poses" to="pose2/poses" />
+            <remap from="positions" to="pose2/positions" />
+        </node>
+        -->
+        <node name="apriltag_transform" pkg="vendor_hand" type="apriltag_transform" output="screen">
+            <rosparam command="load" file="$(find vendor_hand)/config/param/robot_param_left.yaml"/>
+            <param name="base_tag_id" value="51"/>
+            <param name="first_tag_id" value="25"/>
+            <param name="end_tag_id" value="49"/>
+        </node>
+    </group>
+
+    <group ns="right">
+        <node pkg="tf" type="static_transform_publisher" name="right_transform" args="0 -0.033 0 -0.5236 0 3.1415 map right_link 100"/>
+        <node name="arm_sim" pkg="vendor_hand" type="arm_sim" output="screen">
+            <rosparam command="load" file="$(find vendor_hand)/config/param/robot_param_right.yaml"/>
+            <remap from="now_angle" to="sim/now_angle"/>
+            <remap from="now_linear_pos" to="sim/now_linear_pos"/>
+            <remap from="linear_vel" to="linear_vel_unuse"/>
+            <remap from="real_linear_pos" to="now_linear_pos"/>
+        </node>
+        <!--pose 1 -->
+        <node name="target_pub" pkg="vendor_hand" type="target_pub" output="screen">
+            <rosparam command="load" file="$(find vendor_hand)/config/param/robot_param_right.yaml"/>
+        </node>
+        <node name="arm_controller" pkg="vendor_hand" type="arm_controller" output="screen">
+            <rosparam command="load" file="$(find vendor_hand)/config/param/robot_param_right.yaml"/>
+        </node>
+
+        <!--pose 2 -->
+        <!--
+        <node name="target_pub2" pkg="vendor_hand" type="target_pub" output="screen">
+            <rosparam command="load" file="$(find vendor_hand)/config/param/robot_param.yaml"/>
+            <param name="target_pose_shape_num" value="6"/>
+            <remap from="target_poses" to="pose2/target_poses" />
+            <remap from="target_marker" to="pose2/target_marker" />
+            <remap from="target_marker2" to="pose2/target_marker2" />
+        </node>
+        <node name="arm_controller2" pkg="vendor_hand" type="arm_controller" output="screen">
+            <rosparam command="load" file="$(find vendor_hand)/config/param/robot_param.yaml"/>
+            <remap from="target_poses" to="pose2/target_poses" />
+            <remap from="start" to="start2" />
+            <remap from="poses" to="pose2/poses" />
+            <remap from="positions" to="pose2/positions" />
+        </node>
+        -->
+        <node name="apriltag_transform" pkg="vendor_hand" type="apriltag_transform" output="screen">
+            <rosparam command="load" file="$(find vendor_hand)/config/param/robot_param_right.yaml"/>
+            <param name="base_tag_id" value="50"/>
+            <param name="first_tag_id" value="0"/>
+            <param name="end_tag_id" value="24"/>
+            <param name="inverse_base_tag" value="true"/>
+        </node>
+    </group>
+
+    <arg name="rviz_file" default="$(find vendor_hand)/config/rviz/dual_arm_measurement.rviz" />
+    <node pkg="rviz" type="rviz" name="rviz" args="-d $(arg rviz_file)" respawn="true" />
+</launch>

@@ -126,6 +126,7 @@ int main(int argc, char **argv)
     vendor_num = pn.param<int>("vendor_num", 1);
     const double arm_unit_radius = pn.param<double>("arm_unit_radius", 0.02);
     linear_pos = arm_unit_length * (vendor_num);
+    const std::string base_frame_id = pn.param<std::string>("base_frame_id", "map");
     prev_time = ros::Time::now();
     // Publisher
     ros::Publisher markers_pub = n.advertise<visualization_msgs::MarkerArray>("arm_sim_markers", 1);
@@ -151,7 +152,7 @@ int main(int argc, char **argv)
     {
 
         double angle_sum = 0.0;
-        markers.markers[0].header.frame_id = "map";
+        markers.markers[0].header.frame_id = base_frame_id;
         markers.markers[0].header.stamp = ros::Time::now();
         markers.markers[0].ns = "arm";
         markers.markers[0].id = 0;
@@ -173,7 +174,7 @@ int main(int argc, char **argv)
         markers.markers[0].color.a = 1.0;
         for (int i = 1; i < markers.markers.size(); i++)
         {
-            markers.markers[i].header.frame_id = "map";
+            markers.markers[i].header.frame_id = base_frame_id;
             markers.markers[i].header.stamp = ros::Time::now();
             markers.markers[i].ns = "arm";
             markers.markers[i].id = i;
@@ -201,7 +202,7 @@ int main(int argc, char **argv)
 
         {
         int i=0;
-        debug_markers.markers[i].header.frame_id = "map";
+        debug_markers.markers[i].header.frame_id = base_frame_id;
         debug_markers.markers[i].header.stamp = ros::Time::now();
         debug_markers.markers[i].ns = "debug";
         debug_markers.markers[i].id = i;
@@ -228,7 +229,7 @@ int main(int argc, char **argv)
         markers_pub.publish(markers);
 
         geometry_msgs::PoseArray pose_array;
-        pose_array.header.frame_id = "map";
+        pose_array.header.frame_id = base_frame_id;
         pose_array.header.stamp = ros::Time::now();
         for(const auto & marker : markers.markers){
             pose_array.poses.push_back(marker.pose);

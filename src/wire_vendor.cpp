@@ -63,20 +63,6 @@ int main(int argc, char **argv){
     pre_joy.buttons.resize(joy_size);
     diff_joy.axes.resize(joy_size);
     diff_joy.buttons.resize(joy_size);
-
-    motor0.setTorqueEnable(false);
-    motor2.setTorqueEnable(false);
-    motor3.setTorqueEnable(false);
-
-    rmotor0.setTorqueEnable(false);
-    rmotor2.setTorqueEnable(false);
-    rmotor3.setTorqueEnable(false);
-
-    motor0.setOperatingMode(dynamixel_wrapper::Mode::Velocity);
-    motor2.setOperatingMode(dynamixel_wrapper::Mode::Velocity);
-
-    rmotor0.setOperatingMode(dynamixel_wrapper::Mode::Velocity);
-    rmotor2.setOperatingMode(dynamixel_wrapper::Mode::Velocity);
     
     motor0.setCurrentLimit(60.0);
     motor2.setCurrentLimit(10.0);
@@ -178,6 +164,15 @@ int main(int argc, char **argv){
                 rmotor2.setTorqueEnable(true);
                 rmotor3.setTorqueEnable(true);
             }
+            else{
+                motor0.setTorqueEnable(true);
+                motor2.setTorqueEnable(true);
+                motor3.setTorqueEnable(true);
+                rmotor0.setTorqueEnable(true);
+                rmotor2.setTorqueEnable(true);
+                rmotor3.setTorqueEnable(true);
+
+            }
         }
        
         //right
@@ -202,12 +197,12 @@ int main(int argc, char **argv){
         //L1
         if(joy_msg.buttons[4]){
             motor3.setTorqueEnable(true);
-            motor3.setGoalCurrent(-340.0);
+            motor3.setGoalCurrent(-100.0);
         }
         //R1
         if(joy_msg.buttons[5]){
             rmotor3.setTorqueEnable(true);
-            rmotor3.setGoalCurrent(340.0);
+            rmotor3.setGoalCurrent(100.0);
         }
         //share
         if(joy_msg.buttons[8]){

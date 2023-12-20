@@ -19,6 +19,7 @@ int main(int argc, char **argv)
     ros::Rate loop_rate(10);
     const auto arm_unit_length = pn.param<double>("arm_unit_length", 0.013);
     const auto vendor_num = pn.param<int>("vendor_num", 1);
+    const auto base_frame_id = pn.param<std::string>("base_frame_id", "map");
 
     // Publisher
     ros::Publisher poses_pub = n.advertise<geometry_msgs::PoseArray>("target_poses", 1);
@@ -37,7 +38,7 @@ int main(int argc, char **argv)
         pose.position.z = z;
         return pose;
     };
-    poses_msg.header.frame_id = "map";
+    poses_msg.header.frame_id = base_frame_id;
     poses_msg.poses.emplace_back(pose_init(0.0, 0.0));
 
     const int target_pose_shape_num = pn.param<int>("target_pose_shape_num", 0);
@@ -118,10 +119,95 @@ int main(int argc, char **argv)
             poses_msg.poses.emplace_back(pose_init(-0.05, 2.0*radius));
         }
         break;
+    
+    case 8:
+        //c  shape
+        {
+            const auto radius = 0.16;
+            for(int i=0; i<=60; i+=5){
+                poses_msg.poses.emplace_back(pose_init(0.03+radius*sin(i*M_PI/180), -(radius-radius*cos(i*M_PI/180))));
+            }
+            //poses_msg.poses.emplace_back(pose_init(-0.05, 2.0*radius));
+        }
+        break;
+
+    case 9:
+        //linear shape
+        {
+            poses_msg.poses.emplace_back(pose_init(0.01, 0.0));
+            poses_msg.poses.emplace_back(pose_init(0.09, 0.0));
+            poses_msg.poses.emplace_back(pose_init(0.1, 0.0));
+            poses_msg.poses.emplace_back(pose_init(0.15, 0.0));
+        }
+        break;
+
+    case 10:
+        //hyotan  shape
+        {
+            poses_msg.poses.emplace_back(pose_init(0.05, 0.0));
+            poses_msg.poses.emplace_back(pose_init(0.125, 0.05));
+            poses_msg.poses.emplace_back(pose_init(0.2, 0.03));
+            poses_msg.poses.emplace_back(pose_init(0.275, 0.05));
+            //poses_msg.poses.emplace_back(pose_init(0.35, 0.0));
+        }
+        break;
+    
+    case 11:
+        //hyotan  shape exp
+        {
+            for(int i=0; i<=280; i+=10){
+                const double x=0.01*i;
+                poses_msg.poses.emplace_back(pose_init(double(i)/2000.0+0.01,0.007*(cos(i*M_PI/180)-1)*(cos(i*M_PI/180)-1)));
+            }
+            for(int i=400; i<=620; i+=10){
+                const double x=0.01*i;
+                poses_msg.poses.emplace_back(pose_init(double(i-100)/2000.0+0.01,0.007*(cos(i*M_PI/180)-1)*(cos(i*M_PI/180)-1)));
+            }
+        }
+        break;
+    
+    case 12:
+        //hyotan  shape exp
+        {
+            // cos shape
+        {
+            for(int i=0; i<650; i+=10){
+                poses_msg.poses.emplace_back(pose_init(double(i)/2500.0+0.01,-0.02*(cos(i*M_PI/180)-1)));
+            }
+        }
+        }
+        break;
+    
+    case 13:
+        //c  shape
+        {
+            const auto radius = 0.11;
+            for(int i=0; i<=125; i+=5){
+                poses_msg.poses.emplace_back(pose_init(0.0+radius*sin(i*M_PI/180), -(radius-radius*cos(i*M_PI/180))));
+            }
+            //poses_msg.poses.emplace_back(pose_init(-0.05, 2.0*radius));
+        }
+        break;
+    
+    case 14:
+        //mini hyotan
+        {
+            const auto radius = 0.05;
+            for(int i=40; i<=140; i+=5){
+                poses_msg.poses.emplace_back(pose_init(radius-radius*cos(i*M_PI/180),-0.03+radius*sin(i*M_PI/180)));
+            }
+            for(int i=40; i<=140; i+=5){
+                poses_msg.poses.emplace_back(pose_init(0.1+radius-radius*cos(i*M_PI/180), -0.03+radius*sin(i*M_PI/180)));
+            }
+            //poses_msg.poses.emplace_back(pose_init(-0.05, 2.0*radius));
+        }
+        break;
 
     default:
         break;
     }
+
+    
     
     //offset
     for(int i=1; i<poses_msg.poses.size(); i++){
@@ -132,7 +218,7 @@ int main(int argc, char **argv)
     {
 
         visualization_msgs::Marker marker;
-        marker.header.frame_id = "map";
+        marker.header.frame_id = base_frame_id;
         marker.header.stamp = ros::Time::now();
         marker.ns = "target_poses";
         marker.id = 0;
