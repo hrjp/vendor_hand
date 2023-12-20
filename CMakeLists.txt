@@ -41,3 +41,6 @@ target_link_libraries(target_pub ${catkin_LIBRARIES})
 
 add_executable(arm_controller src/arm_controller.cpp)
 target_link_libraries(arm_controller ${catkin_LIBRARIES})
+
+add_executable(apriltag_transform src/apriltag_transform.cpp)
+target_link_libraries(apriltag_transform ${catkin_LIBRARIES})

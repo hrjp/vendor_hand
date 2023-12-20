@@ -22,4 +22,12 @@
     <rosparam command="load" file="$(find vendor_hand)/config/apriltag/settings.yaml"/>
     <rosparam command="load" file="$(find vendor_hand)/config/apriltag/tags.yaml"/>
   </node>
+
+  <node name="apriltag_transform" pkg="vendor_hand" type="apriltag_transform" output="screen">
+        <rosparam command="load" file="$(find vendor_hand)/config/param/robot_param.yaml"/>
+        <param name="base_tag_id" value="24"/>
+        <param name="first_tag_id" value="0"/>
+        <param name="end_tag_id" value="23"/>
+  </node>
+
 </launch>
