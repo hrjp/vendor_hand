@@ -21,6 +21,9 @@ std::string base_frame_id = "base_link";
 double arm_unit_radius = 0.02;
 
 ros::Publisher markers_pub;
+ros::Publisher diff_markers_pub;
+
+geometry_msgs::PoseArray poses_msg;
 
 void tagCallback(const apriltag_ros::AprilTagDetectionArray::ConstPtr &msg)
 {
@@ -45,6 +48,7 @@ void tagCallback(const apriltag_ros::AprilTagDetectionArray::ConstPtr &msg)
         return;
     }
     visualization_msgs::MarkerArray marker_array;
+    visualization_msgs::MarkerArray diff_marker_array;
     for(const auto & tag : msg->detections){
         if(tag.id[0] == base_tag_id){
             continue;
@@ -52,7 +56,7 @@ void tagCallback(const apriltag_ros::AprilTagDetectionArray::ConstPtr &msg)
         if(tag.id[0]<first_tag_id || end_tag_id<tag.id[0]){
             continue;
         }
-        visualization_msgs::Marker marker;
+        
         geometry_msgs::Pose transformed_pose;
         // base_tag_poseを基準にtagの位置を変換
         tf::Transform base_tag_tf;
@@ -61,6 +65,13 @@ void tagCallback(const apriltag_ros::AprilTagDetectionArray::ConstPtr &msg)
         tf::poseMsgToTF(tag.pose.pose.pose, tag_tf);
         tf::Transform transformed_tf = base_tag_tf.inverse() * tag_tf;
         tf::poseTFToMsg(transformed_tf, transformed_pose);
+        visualization_msgs::Marker marker;
+        marker.header.frame_id = base_frame_id;
+        marker.header.stamp = ros::Time::now();
+        marker.ns = std::string("apriltag_")+base_frame_id;
+        marker.id = tag.id[0];
+        marker.type = visualization_msgs::Marker::CYLINDER;
+        marker.action = visualization_msgs::Marker::ADD;
         marker.pose.position.x = transformed_pose.position.x;
         marker.pose.position.y = transformed_pose.position.y;
         marker.pose.position.z = 0.0;
@@ -68,12 +79,6 @@ void tagCallback(const apriltag_ros::AprilTagDetectionArray::ConstPtr &msg)
         marker.pose.orientation.x = 0.0;
         marker.pose.orientation.y = 0.0;
         marker.pose.orientation.z = 0.0;
-        marker.header.frame_id = base_frame_id;
-        marker.header.stamp = ros::Time::now();
-        marker.ns = std::string("apriltag_")+base_frame_id;
-        marker.id = tag.id[0];
-        marker.type = visualization_msgs::Marker::CYLINDER;
-        marker.action = visualization_msgs::Marker::ADD;
         marker.scale.x = arm_unit_radius;
         marker.scale.y = arm_unit_radius;
         marker.scale.z = 0.01;
@@ -82,8 +87,29 @@ void tagCallback(const apriltag_ros::AprilTagDetectionArray::ConstPtr &msg)
         marker.color.b = 0.0;
         marker.color.a = 1.0;
         marker_array.markers.emplace_back(marker);
+
+        if(poses_msg.poses.size()<=tag.id[0]-first_tag_id){
+            continue;
+        }
+        visualization_msgs::Marker diff_marker;
+        diff_marker.header.frame_id = base_frame_id;
+        diff_marker.header.stamp = ros::Time::now();
+        diff_marker.ns = std::string("apriltag_diff_")+base_frame_id;
+        diff_marker.id = tag.id[0];
+        diff_marker.type = visualization_msgs::Marker::LINE_STRIP;
+        diff_marker.action = visualization_msgs::Marker::ADD;
+        diff_marker.points.emplace_back(marker.pose.position);
+        diff_marker.points.emplace_back(poses_msg.poses.at(tag.id[0]-first_tag_id).position);
+        diff_marker.scale.x = 0.001;
+        diff_marker.color.r = 0.0;
+        diff_marker.color.g = 0.0;
+        diff_marker.color.b = 1.0;
+        diff_marker.color.a = 1.0;
+        diff_marker_array.markers.emplace_back(diff_marker);
+
     }
     markers_pub.publish(marker_array);
+    diff_markers_pub.publish(diff_marker_array);
 
 }
 
@@ -102,8 +128,10 @@ int main(int argc, char **argv)
 
     // Publisher
     markers_pub = n.advertise<visualization_msgs::MarkerArray>("apriltag_markers", 1);
+    diff_markers_pub = n.advertise<visualization_msgs::MarkerArray>("apriltag_diff_markers", 1);
     // subscriber
-    ros::Subscriber joy_sub = n.subscribe("tag_detections", 1, tagCallback);
+    ros::Subscriber joy_sub = n.subscribe("/tag_detections", 1, tagCallback);
+    ros::Subscriber pose_sub = n.subscribe<geometry_msgs::PoseArray>("poses", 1, [&](const geometry_msgs::PoseArray::ConstPtr &msg) { poses_msg = *msg; });
     while (n.ok())
     {
         ros::spinOnce();
