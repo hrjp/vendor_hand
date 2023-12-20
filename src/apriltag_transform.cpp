@@ -19,6 +19,7 @@ int first_tag_id = 0;
 int end_tag_id = 0;
 std::string base_frame_id = "base_link";
 double arm_unit_radius = 0.02;
+bool inverse_base_tag = false;
 
 ros::Publisher markers_pub;
 ros::Publisher diff_markers_pub;
@@ -47,6 +48,14 @@ void tagCallback(const apriltag_ros::AprilTagDetectionArray::ConstPtr &msg)
     {
         return;
     }
+    //base_tagをx軸周りに180度回転
+    if(inverse_base_tag){
+        tf::Transform base_tag_tf;
+        tf::poseMsgToTF(base_tag_pose, base_tag_tf);
+        tf::Transform inverse_base_tag_tf = base_tag_tf * tf::Transform(tf::Quaternion(0.0, M_PI, 0.0));
+        tf::poseTFToMsg(inverse_base_tag_tf, base_tag_pose);
+    }
+
     visualization_msgs::MarkerArray marker_array;
     visualization_msgs::MarkerArray diff_marker_array;
     for(const auto & tag : msg->detections){
@@ -124,6 +133,7 @@ int main(int argc, char **argv)
     end_tag_id = pn.param<int>("end_tag_id", 0);
     base_frame_id = pn.param<std::string>("base_frame_id", "base_link");
     arm_unit_radius = pn.param<double>("arm_unit_radius", 0.02);
+    inverse_base_tag = pn.param<bool>("inverse_base_tag", false);
     ros::Rate loop_rate(10);
 
     // Publisher

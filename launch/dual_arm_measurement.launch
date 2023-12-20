@@ -89,6 +89,13 @@
             <remap from="positions" to="pose2/positions" />
         </node>
         -->
+        <node name="apriltag_transform" pkg="vendor_hand" type="apriltag_transform" output="screen">
+            <rosparam command="load" file="$(find vendor_hand)/config/param/robot_param_right.yaml"/>
+            <param name="base_tag_id" value="50"/>
+            <param name="first_tag_id" value="0"/>
+            <param name="end_tag_id" value="24"/>
+            <param name="inverse_base_tag" value="true"/>
+        </node>
     </group>
 
     <arg name="rviz_file" default="$(find vendor_hand)/config/rviz/dual_arm_measurement.rviz" />
