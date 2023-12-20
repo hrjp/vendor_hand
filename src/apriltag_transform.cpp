@@ -23,6 +23,7 @@ bool inverse_base_tag = false;
 
 ros::Publisher markers_pub;
 ros::Publisher diff_markers_pub;
+ros::Publisher rmse_pub;
 
 geometry_msgs::PoseArray poses_msg;
 
@@ -58,6 +59,8 @@ void tagCallback(const apriltag_ros::AprilTagDetectionArray::ConstPtr &msg)
 
     visualization_msgs::MarkerArray marker_array;
     visualization_msgs::MarkerArray diff_marker_array;
+    double rmse = 0.0;
+    int calc_count = 0;
     for(const auto & tag : msg->detections){
         if(tag.id[0] == base_tag_id){
             continue;
@@ -116,9 +119,18 @@ void tagCallback(const apriltag_ros::AprilTagDetectionArray::ConstPtr &msg)
         diff_marker.color.a = 1.0;
         diff_marker_array.markers.emplace_back(diff_marker);
 
+        //rmse
+        rmse += std::hypot(marker.pose.position.x-poses_msg.poses.at(tag.id[0]-first_tag_id).position.x, marker.pose.position.y-poses_msg.poses.at(tag.id[0]-first_tag_id).position.y);
+        calc_count++;
+
     }
     markers_pub.publish(marker_array);
     diff_markers_pub.publish(diff_marker_array);
+    if(calc_count){
+        std_msgs::Float32 rmse_msg;
+        rmse_msg.data = rmse/calc_count*1000.0;
+        rmse_pub.publish(rmse_msg);
+    }
 
 }
 
@@ -139,6 +151,7 @@ int main(int argc, char **argv)
     // Publisher
     markers_pub = n.advertise<visualization_msgs::MarkerArray>("apriltag_markers", 1);
     diff_markers_pub = n.advertise<visualization_msgs::MarkerArray>("apriltag_diff_markers", 1);
+    rmse_pub = n.advertise<std_msgs::Float32>("rmse", 1);
     // subscriber
     ros::Subscriber joy_sub = n.subscribe("/tag_detections", 1, tagCallback);
     ros::Subscriber pose_sub = n.subscribe<geometry_msgs::PoseArray>("poses", 1, [&](const geometry_msgs::PoseArray::ConstPtr &msg) { poses_msg = *msg; });

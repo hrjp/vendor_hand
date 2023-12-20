@@ -308,7 +308,7 @@ int main(int argc, char **argv){
         }
         //option
         if(joy_msg.buttons[9]){
-            //start_pub.publish(std_msgs::Empty());
+            start_pub.publish(std_msgs::Empty());
             rstart_pub.publish(std_msgs::Empty());
             std_msgs::Float32MultiArray arm_msg;
             arm_msg.data.resize(8);
