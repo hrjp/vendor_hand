@@ -204,7 +204,7 @@ Visualization Manager:
           Marker Topic: /left/apriltag_markers
           Name: MarkerArray
           Namespaces:
-            apriltag_left_link: true
+            {}
           Queue Size: 100
           Value: true
         - Class: rviz/MarkerArray
@@ -212,9 +212,32 @@ Visualization Manager:
           Marker Topic: /left/apriltag_diff_markers
           Name: MarkerArray
           Namespaces:
-            apriltag_diff_left_link: true
+            {}
           Queue Size: 100
           Value: true
+        - Class: jsk_rviz_plugin/PieChart
+          Enabled: true
+          Name: LeftRMSE
+          Topic: /left/rmse
+          Value: true
+          auto color change: false
+          background color: 0; 0; 0
+          backround alpha: 0
+          clockwise rotate direction: false
+          foreground alpha: 0.699999988079071
+          foreground alpha 2: 0.4000000059604645
+          foreground color: 0; 0; 0
+          left: 10
+          max color: 255; 0; 0
+          max color change threthold: 0
+          max value: 300
+          med color: 255; 0; 0
+          med color change threthold: 0
+          min value: 0
+          show caption: true
+          size: 128
+          text size: 14
+          top: 10
       Enabled: true
       Name: LeftArm
     - Class: rviz/Group
@@ -264,7 +287,7 @@ Visualization Manager:
           Marker Topic: /right/apriltag_markers
           Name: MarkerArray
           Namespaces:
-            apriltag_right_link: true
+            {}
           Queue Size: 100
           Value: true
         - Class: rviz/MarkerArray
@@ -272,9 +295,32 @@ Visualization Manager:
           Marker Topic: /right/apriltag_diff_markers
           Name: MarkerArray
           Namespaces:
-            apriltag_diff_right_link: true
+            {}
           Queue Size: 100
           Value: true
+        - Class: jsk_rviz_plugin/PieChart
+          Enabled: true
+          Name: RightRMSE
+          Topic: /right/rmse
+          Value: true
+          auto color change: false
+          background color: 0; 0; 0
+          backround alpha: 0
+          clockwise rotate direction: false
+          foreground alpha: 0.699999988079071
+          foreground alpha 2: 0.4000000059604645
+          foreground color: 0; 0; 0
+          left: 10
+          max color: 255; 0; 0
+          max color change threthold: 0
+          max value: 300
+          med color: 255; 0; 0
+          med color change threthold: 0
+          min value: 0
+          show caption: true
+          size: 128
+          text size: 14
+          top: 180
       Enabled: true
       Name: RightArm
     - Class: rviz/Image
@@ -289,52 +335,6 @@ Visualization Manager:
       Transport Hint: raw
       Unreliable: false
       Value: true
-    - Class: jsk_rviz_plugin/PieChart
-      Enabled: true
-      Name: LeftRMSE
-      Topic: /left/rmse
-      Value: true
-      auto color change: false
-      background color: 0; 0; 0
-      backround alpha: 0
-      clockwise rotate direction: false
-      foreground alpha: 0.699999988079071
-      foreground alpha 2: 0.4000000059604645
-      foreground color: 0; 0; 0
-      left: 10
-      max color: 255; 0; 0
-      max color change threthold: 0
-      max value: 300
-      med color: 255; 0; 0
-      med color change threthold: 0
-      min value: 0
-      show caption: true
-      size: 128
-      text size: 14
-      top: 10
-    - Class: jsk_rviz_plugin/PieChart
-      Enabled: true
-      Name: RightRMSE
-      Topic: /right/rmse
-      Value: true
-      auto color change: false
-      background color: 0; 0; 0
-      backround alpha: 0
-      clockwise rotate direction: false
-      foreground alpha: 0.699999988079071
-      foreground alpha 2: 0.4000000059604645
-      foreground color: 0; 0; 0
-      left: 10
-      max color: 255; 0; 0
-      max color change threthold: 0
-      max value: 300
-      med color: 255; 0; 0
-      med color change threthold: 0
-      min value: 0
-      show caption: true
-      size: 128
-      text size: 14
-      top: 180
   Enabled: true
   Global Options:
     Background Color: 255; 255; 255

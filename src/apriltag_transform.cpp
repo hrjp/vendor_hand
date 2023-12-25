@@ -77,6 +77,9 @@ void tagCallback(const apriltag_ros::AprilTagDetectionArray::ConstPtr &msg)
         tf::poseMsgToTF(tag.pose.pose.pose, tag_tf);
         tf::Transform transformed_tf = base_tag_tf.inverse() * tag_tf;
         tf::poseTFToMsg(transformed_tf, transformed_pose);
+        if(transformed_pose.position.x<0.0){
+            continue;
+        }
         visualization_msgs::Marker marker;
         marker.header.frame_id = base_frame_id;
         marker.header.stamp = ros::Time::now();
