@@ -6,8 +6,7 @@ linear_vel: 0.015
 max_unit_angle_degree: 20
 base_frame_id: right_link
 
-# 1 コ round
-# 2 コ
-# 3 circle
-# 4 cos
+# 9 line 
+# 8 circle
+# 11 hyotan
 target_pose_shape_num: 9
