@@ -10,4 +10,4 @@ base_frame_id: left_link
 # 2 コ
 # 3 circle
 # 4 cos
-target_pose_shape_num: 9
+target_pose_shape_num: 11

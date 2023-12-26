@@ -81,10 +81,10 @@ int main(int argc, char **argv){
     rmotor3.setCurrentLimit(550.0);
     
     const std::vector<double> init_angle={
-        53.0,
+        53.0+2,
         motor2.getPresentPosition()};
     const std::vector<double> rinit_angle={
-        206.0,
+        206.0+2.0,
         rmotor2.getPresentPosition()};
     std::cout<<"init_angle[0]:"<<init_angle[0]<<std::endl;
     std::cout<<"init_angle[1]:"<<init_angle[1]<<std::endl;
