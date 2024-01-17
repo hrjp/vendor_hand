@@ -8,6 +8,7 @@
 
 #include <ros/ros.h>
 #include <std_msgs/Float32.h>
+#include <std_msgs/Float32MultiArray.h>
 #include <geometry_msgs/PoseArray.h>
 #include <visualization_msgs/MarkerArray.h>
 #include <visualization_msgs/Marker.h>
@@ -24,6 +25,7 @@ bool inverse_base_tag = false;
 ros::Publisher markers_pub;
 ros::Publisher diff_markers_pub;
 ros::Publisher rmse_pub;
+ros::Publisher orientations_pub;
 
 geometry_msgs::PoseArray poses_msg;
 
@@ -61,7 +63,11 @@ void tagCallback(const apriltag_ros::AprilTagDetectionArray::ConstPtr &msg)
     visualization_msgs::MarkerArray diff_marker_array;
     double rmse = 0.0;
     int calc_count = 0;
-    for(const auto & tag : msg->detections){
+    auto tags = msg->detections;
+    std::sort(tags.begin(), tags.end(), [](const apriltag_ros::AprilTagDetection &a, const apriltag_ros::AprilTagDetection &b) { return a.id[0] < b.id[0]; });
+    std::optional<double> pre_yaw=std::nullopt;
+    std_msgs::Float32MultiArray orientations_msg;
+    for(const auto & tag : tags){
         if(tag.id[0] == base_tag_id){
             continue;
         }
@@ -90,10 +96,10 @@ void tagCallback(const apriltag_ros::AprilTagDetectionArray::ConstPtr &msg)
         marker.pose.position.x = transformed_pose.position.x;
         marker.pose.position.y = transformed_pose.position.y;
         marker.pose.position.z = 0.0;
-        marker.pose.orientation.w = 1.0;
+        marker.pose.orientation.w = transformed_pose.orientation.w;
         marker.pose.orientation.x = 0.0;
         marker.pose.orientation.y = 0.0;
-        marker.pose.orientation.z = 0.0;
+        marker.pose.orientation.z = transformed_pose.orientation.z;
         marker.scale.x = arm_unit_radius;
         marker.scale.y = arm_unit_radius;
         marker.scale.z = 0.01;
@@ -126,9 +132,31 @@ void tagCallback(const apriltag_ros::AprilTagDetectionArray::ConstPtr &msg)
         rmse += std::hypot(marker.pose.position.x-poses_msg.poses.at(tag.id[0]-first_tag_id).position.x, marker.pose.position.y-poses_msg.poses.at(tag.id[0]-first_tag_id).position.y);
         calc_count++;
 
+        //orientation
+        geometry_msgs::Quaternion quat = transformed_pose.orientation;
+        tf::Quaternion tf_quat;
+        tf::quaternionMsgToTF(transformed_pose.orientation, tf_quat);
+        double yaw = tf::getYaw(tf_quat);
+        if(pre_yaw){
+            double diff_yaw = yaw - pre_yaw.value();
+            if(diff_yaw > M_PI){
+                diff_yaw -= 2*M_PI;
+            }
+            if(diff_yaw < -M_PI){
+                diff_yaw += 2*M_PI;
+            }
+            orientations_msg.data.emplace_back(diff_yaw);
+        }
+        else{
+            //orientations_msg.data.emplace_back(0.0);
+        }
+        pre_yaw = yaw;
+
+
     }
     markers_pub.publish(marker_array);
     diff_markers_pub.publish(diff_marker_array);
+    orientations_pub.publish(orientations_msg);
     if(calc_count){
         std_msgs::Float32 rmse_msg;
         rmse_msg.data = rmse/calc_count*1000.0;
@@ -155,6 +183,7 @@ int main(int argc, char **argv)
     markers_pub = n.advertise<visualization_msgs::MarkerArray>("apriltag_markers", 1);
     diff_markers_pub = n.advertise<visualization_msgs::MarkerArray>("apriltag_diff_markers", 1);
     rmse_pub = n.advertise<std_msgs::Float32>("rmse", 1);
+    orientations_pub = n.advertise<std_msgs::Float32MultiArray>("orientations", 1);
     // subscriber
     ros::Subscriber joy_sub = n.subscribe("/tag_detections", 1, tagCallback);
     ros::Subscriber pose_sub = n.subscribe<geometry_msgs::PoseArray>("poses", 1, [&](const geometry_msgs::PoseArray::ConstPtr &msg) { poses_msg = *msg; });
