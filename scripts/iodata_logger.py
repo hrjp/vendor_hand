@@ -57,6 +57,9 @@ def main():
     rospy.spin()
 
     # save
+    global start_flag
+    if not start_flag:
+        return
     if not os.path.isdir(save_dir):
         os.makedirs(save_dir)
     global now_angle_array, now_linear_pos_array, angles_array, orientations_array

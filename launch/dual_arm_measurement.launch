@@ -1,5 +1,5 @@
 <launch>
-    <arg name="log_dir" default="$(find vendor_hand)/log/linear" />
+    <arg name="log_dir" default="$(find vendor_hand)/log/wave" />
 
     <node name="joy_node" pkg="joy" type="joy_node">
         <param name="dev" value="/dev/input/js1" />
@@ -56,7 +56,7 @@
             <param name="end_tag_id" value="49"/>
         </node>
         <node name="iodata_logger" pkg="vendor_hand" type="iodata_logger.py" output="screen">
-            <param name="save_dir" value="$(arg log_dir)/left"/>
+            <param name="save_dir" value="$(arg log_dir)/left/"/>
         </node>
     </group>
 
@@ -103,7 +103,7 @@
         </node>
 
         <node name="iodata_logger" pkg="vendor_hand" type="iodata_logger.py" output="screen">
-            <param name="save_dir" value="$(arg log_dir)/right"/>
+            <param name="save_dir" value="$(arg log_dir)/right/"/>
         </node>
         
     </group>

@@ -133,7 +133,6 @@ void tagCallback(const apriltag_ros::AprilTagDetectionArray::ConstPtr &msg)
         calc_count++;
 
         //orientation
-        geometry_msgs::Quaternion quat = transformed_pose.orientation;
         tf::Quaternion tf_quat;
         tf::quaternionMsgToTF(transformed_pose.orientation, tf_quat);
         double yaw = tf::getYaw(tf_quat);

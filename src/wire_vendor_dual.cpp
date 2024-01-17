@@ -81,10 +81,10 @@ int main(int argc, char **argv){
     rmotor3.setCurrentLimit(550.0);
     
     const std::vector<double> init_angle={
-        53.0+2.0,
+        53.0+3.0,
         motor2.getPresentPosition()};
     const std::vector<double> rinit_angle={
-        206.0+1.0,
+        206.0+2.0,
         rmotor2.getPresentPosition()};
     std::cout<<"init_angle[0]:"<<init_angle[0]<<std::endl;
     std::cout<<"init_angle[1]:"<<init_angle[1]<<std::endl;
@@ -311,7 +311,7 @@ int main(int argc, char **argv){
         //option
         if(joy_msg.buttons[9]){
             start_pub.publish(std_msgs::Empty());
-            rstart_pub.publish(std_msgs::Empty());
+            //rstart_pub.publish(std_msgs::Empty());
             std_msgs::Float32MultiArray arm_msg;
             arm_msg.data.resize(8);
             //arm_msg.data = {0.0, 0.0, -0.23, 0.0, 0.0, 0.0,0.05,0.2};
