@@ -9,4 +9,4 @@ base_frame_id: right_link
 # 9 line 
 # 8 circle
 # 11 hyotan
-target_pose_shape_num: 11
+target_pose_shape_num: 9
