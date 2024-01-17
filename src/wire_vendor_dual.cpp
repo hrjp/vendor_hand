@@ -81,10 +81,10 @@ int main(int argc, char **argv){
     rmotor3.setCurrentLimit(550.0);
     
     const std::vector<double> init_angle={
-        53.0+2,
+        53.0+2.0,
         motor2.getPresentPosition()};
     const std::vector<double> rinit_angle={
-        206.0+2.0,
+        206.0+1.0,
         rmotor2.getPresentPosition()};
     std::cout<<"init_angle[0]:"<<init_angle[0]<<std::endl;
     std::cout<<"init_angle[1]:"<<init_angle[1]<<std::endl;
@@ -148,6 +148,7 @@ int main(int argc, char **argv){
     ros::Subscriber manual_angular_sub=n.subscribe<std_msgs::Float32>("manual/angular_vel",1,[&](const std_msgs::Float32::ConstPtr& msg){
         if(!is_manual){return;}
         auto angle_vel_limit=[](double now_angle, double limit_angle, double target_vel){
+            limit_angle+=5.0;
             if(now_angle>limit_angle){
                 return std::min(target_vel,0.0);
             }
@@ -275,7 +276,8 @@ int main(int argc, char **argv){
            std_msgs::Float32MultiArray arm_msg;
             arm_msg.data.resize(8);
             //arm_msg.data = {0.0, 0.0, -0.185, 0.0, 0.0, 0.0,0.2,0.4};//hyotan
-            arm_msg.data = {0.0, 0.0, 0.1, 0.0, 0.0, 0.0,0.15,0.3};
+            arm_msg.data = {0.0, 0.0, -0.135, 0.0, 0.0, 0.0,0.15,0.4};//line
+            //arm_msg.data = {0.0, 0.0, -0.2, 0.0, 0.0, 0.0,0.15,0.4};//hanen
             arm_pub.publish(arm_msg);
         }
 
@@ -312,8 +314,8 @@ int main(int argc, char **argv){
             rstart_pub.publish(std_msgs::Empty());
             std_msgs::Float32MultiArray arm_msg;
             arm_msg.data.resize(8);
-            arm_msg.data = {0.0, 0.0, -0.23, 0.0, 0.0, 0.0,0.05,0.2};
-            //arm_msg.data = {0.0, 0.0, -0.17, 0.0, 0.0, 0.0,0.025,0.2};//sikaku
+            //arm_msg.data = {0.0, 0.0, -0.23, 0.0, 0.0, 0.0,0.05,0.2};
+            arm_msg.data = {0.0, 0.0, -0.17, 0.0, 0.0, 0.0,0.025,0.2};//sikaku
             //arm_pub.publish(arm_msg);
         }
 
