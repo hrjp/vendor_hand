@@ -1,4 +1,6 @@
 <launch>
+    <arg name="log_dir" default="$(find vendor_hand)/log/wave" />
+
     <node name="joy_node" pkg="joy" type="joy_node">
         <param name="dev" value="/dev/input/js1" />
     </node>
@@ -53,6 +55,9 @@
             <param name="first_tag_id" value="25"/>
             <param name="end_tag_id" value="49"/>
         </node>
+        <node name="iodata_logger" pkg="vendor_hand" type="iodata_logger.py" output="screen">
+            <param name="save_dir" value="$(arg log_dir)/left/"/>
+        </node>
     </group>
 
     <group ns="right">
@@ -96,6 +101,11 @@
             <param name="end_tag_id" value="24"/>
             <param name="inverse_base_tag" value="true"/>
         </node>
+
+        <node name="iodata_logger" pkg="vendor_hand" type="iodata_logger.py" output="screen">
+            <param name="save_dir" value="$(arg log_dir)/right/"/>
+        </node>
+        
     </group>
 
     <arg name="rviz_file" default="$(find vendor_hand)/config/rviz/dual_arm_measurement.rviz" />

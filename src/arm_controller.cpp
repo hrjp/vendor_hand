@@ -153,7 +153,7 @@ void posesCallback(const geometry_msgs::PoseArray::ConstPtr &msg)
     positions_pub.publish(markers);
     std_msgs::Float32MultiArray pub_target_angles;
     pub_target_angles.data = target_angles;
-    //angles_pub.publish(pub_target_angles);
+    angles_pub.publish(pub_target_angles);
     poses_pub.publish(pub_arm_poses);
 }
 

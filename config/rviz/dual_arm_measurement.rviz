@@ -247,7 +247,7 @@ Visualization Manager:
           Marker Topic: /right/target_marker2
           Name: Marker
           Namespaces:
-            target_poses2: true
+            {}
           Queue Size: 100
           Value: true
         - Class: rviz/Marker
@@ -255,7 +255,7 @@ Visualization Manager:
           Marker Topic: /right/target_marker
           Name: Marker
           Namespaces:
-            target_poses: true
+            {}
           Queue Size: 100
           Value: true
         - Class: rviz/MarkerArray
@@ -263,7 +263,7 @@ Visualization Manager:
           Marker Topic: /right/positions
           Name: MarkerArray
           Namespaces:
-            calc_positions: true
+            {}
           Queue Size: 100
           Value: true
         - Class: rviz/MarkerArray
@@ -321,7 +321,7 @@ Visualization Manager:
           size: 128
           text size: 14
           top: 10
-      Enabled: true
+      Enabled: false
       Name: RightArm
     - Class: rviz/Image
       Enabled: true
@@ -363,7 +363,7 @@ Visualization Manager:
   Views:
     Current:
       Class: rviz/Orbit
-      Distance: 0.47910934686660767
+      Distance: 0.12935681641101837
       Enable Stereo Rendering:
         Stereo Eye Separation: 0.05999999865889549
         Stereo Focal Distance: 1
@@ -371,9 +371,9 @@ Visualization Manager:
         Value: false
       Field of View: 0.7853981852531433
       Focal Point:
-        X: 0.09328443557024002
-        Y: 0.0025775646790862083
-        Z: 0.26885586977005005
+        X: 0.0836893767118454
+        Y: 0.08439377695322037
+        Z: 0.26891157031059265
       Focal Shape Fixed Size: true
       Focal Shape Size: 0.05000000074505806
       Invert Z Axis: false
@@ -381,7 +381,7 @@ Visualization Manager:
       Near Clip Distance: 0.009999999776482582
       Pitch: 1.5697963237762451
       Target Frame: <Fixed Frame>
-      Yaw: 0.0072292136028409
+      Yaw: 5.230404853820801
     Saved: ~
 Window Geometry:
   Displays:
