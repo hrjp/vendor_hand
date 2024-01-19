@@ -186,13 +186,13 @@ Visualization Manager:
           Queue Size: 100
           Value: true
         - Class: rviz/MarkerArray
-          Enabled: false
+          Enabled: true
           Marker Topic: /left/arm_sim_markers
           Name: MarkerArray
           Namespaces:
-            {}
+            arm: true
           Queue Size: 100
-          Value: false
+          Value: true
         - Class: rviz/MarkerArray
           Enabled: false
           Marker Topic: /left/arm_sim_debug_markers
@@ -230,13 +230,13 @@ Visualization Manager:
           Queue Size: 100
           Value: true
         - Class: rviz/MarkerArray
-          Enabled: false
+          Enabled: true
           Marker Topic: /right/arm_sim_markers
           Name: MarkerArray
           Namespaces:
-            {}
+            arm: true
           Queue Size: 100
-          Value: false
+          Value: true
         - Class: rviz/MarkerArray
           Enabled: false
           Marker Topic: /right/arm_sim_debug_markers

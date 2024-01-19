@@ -81,10 +81,10 @@ int main(int argc, char **argv){
     rmotor3.setCurrentLimit(550.0);
     
     const std::vector<double> init_angle={
-        53.0+2.0,
+        53.0+3.0,
         motor2.getPresentPosition()};
     const std::vector<double> rinit_angle={
-        206.0+1.0,
+        206.0+2.0,
         rmotor2.getPresentPosition()};
     std::cout<<"init_angle[0]:"<<init_angle[0]<<std::endl;
     std::cout<<"init_angle[1]:"<<init_angle[1]<<std::endl;
@@ -260,6 +260,7 @@ int main(int argc, char **argv){
         //right
         if(joy_msg.axes[6]<0){
           manual_state=ManualMode::Right;
+          //start_pub.publish(std_msgs::Empty());
         }
 
         //up
@@ -270,26 +271,31 @@ int main(int argc, char **argv){
         //left
         if(joy_msg.axes[6]>0){
             manual_state=ManualMode::Left;
+            //rstart_pub.publish(std_msgs::Empty());
         }
         //down
         if(joy_msg.axes[7]<0){
            std_msgs::Float32MultiArray arm_msg;
             arm_msg.data.resize(8);
-            //arm_msg.data = {0.0, 0.0, -0.185, 0.0, 0.0, 0.0,0.2,0.4};//hyotan
-            arm_msg.data = {0.0, 0.0, -0.135, 0.0, 0.0, 0.0,0.15,0.4};//line
+            //arm_msg.data = {0.0, 0.0, -0.11, 0.0, 0.0, 0.0,0.15,0.4};//hyotan
+            //arm_msg.data = {0.0, 0.0, -0.155, 0.0, 0.0, 0.0,0.15,0.4};//line
             //arm_msg.data = {0.0, 0.0, -0.2, 0.0, 0.0, 0.0,0.15,0.4};//hanen
+            //arm_msg.data = {0.0, 0.0, -0.165, 0.0, 0.0, 0.0,0.15,0.4};//circle hara_m
+            arm_msg.data = {0.0, 0.0, -0.2, 0.0, 0.0, 0.0,0.15,0.4};//kaki
             arm_pub.publish(arm_msg);
         }
 
         //L1
         if(joy_msg.buttons[4]){
             motor3.setTorqueEnable(true);
-            motor3.setGoalCurrent(-150.0);
+            //motor3.setGoalCurrent(-150.0);
+            motor3.setGoalCurrent(-50.0);
         }
         //R1
         if(joy_msg.buttons[5]){
             rmotor3.setTorqueEnable(true);
-            rmotor3.setGoalCurrent(150.0);
+            //rmotor3.setGoalCurrent(150.0);
+            rmotor3.setGoalCurrent(50.0);
         }
         //L2
         if(joy_msg.buttons[6]){
