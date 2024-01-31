@@ -213,11 +213,21 @@ int main(int argc, char **argv)
         }
         break;
 
+    case 16:
+        //c  shape
+        {
+            const auto radius = 0.11;
+            for(int i=0; i<=90; i+=5){
+                poses_msg.poses.emplace_back(pose_init(0.03+radius*sin(i*M_PI/180), -(radius-radius*cos(i*M_PI/180))));
+            }
+            //poses_msg.poses.emplace_back(pose_init(-0.05, 2.0*radius));
+        }
+        break;
+
     default:
         break;
     }
 
-    
     
     //offset
     for(int i=1; i<poses_msg.poses.size(); i++){
