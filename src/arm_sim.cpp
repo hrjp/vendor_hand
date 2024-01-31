@@ -138,7 +138,7 @@ int main(int argc, char **argv)
     ros::Subscriber angle_sub = n.subscribe("angle", 1, angleCallback);
     ros::Subscriber angular_sub = n.subscribe("angular_vel", 1, angularCallback);
     ros::Subscriber linear_sub = n.subscribe("linear_vel", 1, linearVelCallback);
-    ros::Subscriber angles_sub = n.subscribe("angles", 1, anglesCallback);
+    ros::Subscriber angles_sub = n.subscribe("now_angles", 1, anglesCallback);
     ros::Subscriber linear_pos_sub = n.subscribe<std_msgs::Float32>("real_linear_pos", 1, [&](const std_msgs::Float32::ConstPtr &msg) { linear_pos = msg->data; });
     angles.resize(arm_num);
 
